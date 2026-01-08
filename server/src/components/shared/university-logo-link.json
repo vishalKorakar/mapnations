@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_university_logo_links",
+  "info": {
+    "displayName": "universityLogoLink"
+  },
+  "options": {},
+  "attributes": {
+    "universityLogo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "URL": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

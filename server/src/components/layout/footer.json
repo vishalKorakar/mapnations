@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_layout_footers",
+  "info": {
+    "displayName": "Footer"
+  },
+  "options": {},
+  "attributes": {
+    "naviitems": {
+      "type": "component",
+      "component": "shared.link",
+      "repeatable": true
+    },
+    "linkToBook": {
+      "type": "component",
+      "component": "shared.text-link",
+      "repeatable": false
+    },
+    "universitylogo": {
+      "type": "component",
+      "component": "shared.university-logo-link",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}
