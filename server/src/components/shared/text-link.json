@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_text_links",
+  "info": {
+    "displayName": "textLink"
+  },
+  "options": {},
+  "attributes": {
+    "prefixText": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "isExternal": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "config": {}
+}

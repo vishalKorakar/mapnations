@@ -1,0 +1,104 @@
+{
+  "kind": "collectionType",
+  "collectionName": "maps",
+  "info": {
+    "singularName": "map",
+    "pluralName": "maps",
+    "displayName": "Maps"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "mapTitle": {
+      "type": "string"
+    },
+    "AlternateTitle": {
+      "type": "string"
+    },
+    "creatorName": {
+      "type": "string"
+    },
+    "TypeofResource": {
+      "type": "string"
+    },
+    "DateCreated": {
+      "type": "string"
+    },
+    "DigitalOrigin": {
+      "type": "string"
+    },
+    "Topics": {
+      "type": "string"
+    },
+    "Places": {
+      "type": "string"
+    },
+    "Dates": {
+      "type": "string"
+    },
+    "SubjectGenre": {
+      "type": "string"
+    },
+    "Handle": {
+      "type": "string"
+    },
+    "RightsStatement": {
+      "type": "string"
+    },
+    "Publisher": {
+      "type": "string"
+    },
+    "Language": {
+      "type": "string"
+    },
+    "Extent": {
+      "type": "string"
+    },
+    "PhysicalNote": {
+      "type": "string"
+    },
+    "Scale": {
+      "type": "string"
+    },
+    "Coordinates": {
+      "type": "string"
+    },
+    "Notes": {
+      "type": "string"
+    },
+    "AdministrativeNotes": {
+      "type": "string"
+    },
+    "LocalIdentifiers": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "mapTitle"
+    },
+    "Description": {
+      "type": "text"
+    },
+    "mapYear": {
+      "type": "string"
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter",
+      "inversedBy": "maps"
+    }
+  }
+}
