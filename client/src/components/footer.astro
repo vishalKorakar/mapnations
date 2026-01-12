@@ -1,0 +1,69 @@
+---
+import { fetchGlobal } from '../lib/strapi.js';
+const global = await fetchGlobal();
+
+const footer = global?.footer ?? null;
+const naviitems = footer?.naviitems;
+const linkToBook = footer?.linkToBook;
+---
+
+<!-- <script is:inline define:vars={{ footer }}>
+    console.log(footer);
+  </script> -->
+
+  
+<!-- Footer goes here -->
+<!-- <div id="wrapper">
+<footer class="clearfix">
+    <nav id="footer-nav">
+        <ol>
+        <li><a href="home link here">HOME</a></li>
+        <li><a href="about link here">ABOUT</a></li>
+        <li><a href="blog link here">BLOG</a></li>
+        <li><a href="contact link here">CONTACT</a></li>
+        </ol>
+    </nav>
+    <p>BOOK PUBLISHED BY <strong> {linkToBook[0]?.link
+        ? <a href={linkToBook[0].link} target="_blank" rel="noopener noreferrer">{linkToBook[0]?.text ?? "University Of Chicago Press"}</a>
+        : (linkToBook?.[0]?.text ?? "University Of Chicago Press")
+      }</strong></p>
+    <p id="du-penrose"><a href="http://library.du.edu">Penrose Library at University of Denver</a></p>
+    <p id="footer-credit"><a href="https://www.followbright.com/">Website by Colorado Web Design</a></p>
+</footer>
+</div> -->
+
+{footer ? (
+  <div id="wrapper">
+    <footer class="clearfix">
+      <nav id="footer-nav">
+        <ol>
+          {naviitems.map((item: any) => (
+            <li>
+              <a href={item?.url ?? ''}
+                 target={item?.isExternal ? '_blank' : undefined}
+                 rel={item?.isExternal ? 'noopener noreferrer' : undefined}>
+                {item?.label ?? 'Link'}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      {linkToBook && (
+        <p>BOOK PUBLISHED BY
+          <strong>
+            {linkToBook[0]?.link
+              ? <a href={linkToBook[0]?.link}
+                   target={linkToBook[0]?.isExternal ? '_blank' : undefined}
+                   rel={linkToBook[0]?.isExternal ? 'noopener noreferrer' : undefined}>
+                  {linkToBook[0]?.text ?? linkToBook[0]?.prefixText ?? 'Learn more'}
+                </a>
+              : (linkToBook[0]?.text ?? '')}
+          </strong>
+        </p>
+      )}
+      <p id="du-penrose"><a href={linkToBook[1]?.link ?? ''} target={linkToBook[1]?.isExternal ? '_blank' : undefined} rel={linkToBook[1]?.isExternal ? 'noopener noreferrer' : undefined}>{linkToBook[1].text}</a></p>
+      <p id="footer-credit"><a href={linkToBook[2]?.link ?? ''} target={linkToBook[2]?.isExternal ? '_blank' : undefined} rel={linkToBook[2]?.isExternal ? 'noopener noreferrer' : undefined}>{linkToBook[2].text}</a></p>
+    </footer>
+  </div>
+) : <p>No footer content.</p>}

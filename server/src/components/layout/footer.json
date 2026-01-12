@@ -13,7 +13,7 @@
     "linkToBook": {
       "type": "component",
       "component": "shared.text-link",
-      "repeatable": false
+      "repeatable": true
     },
     "universitylogo": {
       "type": "component",
