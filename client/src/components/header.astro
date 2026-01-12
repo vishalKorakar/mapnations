@@ -1,0 +1,31 @@
+---
+const { global } = Astro.props;
+const logoUrl = global?.logo?.url ?? "/favicon.svg";
+const hoaUrl = global?.hoaLink?.url ?? "http://america100maps.com";
+import Menu from '../components/menu.astro';
+---
+
+<header>
+  <div class="header-inner">
+    <a id="logo" href="/">
+      <img src={logoUrl} alt="Mapping the Nation" width="400" height="90" loading="lazy" decoding="async" />
+    </a>
+
+  <nav id="primary">
+    <ol>
+      <li class="selected"><a href="/">HOME</a></li>
+      <li><a href="/about">ABOUT</a></li>
+      <li><a href="/blog">BLOG</a></li>
+      <li><a href="/contact">CONTACT</a></li>
+    </ol>
+  </nav>
+
+  <Menu />
+
+  <div id="hoa-site-link">
+    <a href={hoaUrl} target="_blank" rel="noopener noreferrer">
+      New!! A History of America in 100 Maps
+    </a>
+  </div>
+  </div>
+</header>

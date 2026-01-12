@@ -1,0 +1,214 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { fetchPages } from '../lib/strapi';
+
+const pages = await fetchPages();
+const info = pages?.[2]?.Sections?.find(
+  (s: any) => s.__component === 'sections.information'
+);
+
+function escapeHtml(value: any = '') {
+  const s = String(value ?? '');
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderInline(node: any): string {
+  if (!node) return '';
+
+  // Plain text
+  if (node.type === 'text') {
+    let h = escapeHtml(node.text ?? '');
+    if (node.italic) h = `<em>${h}</em>`;
+    if (node.bold) h = `<strong>${h}</strong>`;
+    if (node.underline) h = `<u>${h}</u>`;
+    return h;
+  }
+
+  // Link node
+  if (node.type === 'link') {
+    const url = escapeHtml(node.url ?? '#');
+    const inner = (node.children ?? []).map(renderInline).join('');
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
+  }
+
+  return '';
+}
+
+const infoBlocks = info?.Description ?? [];
+const infoHtml = infoBlocks
+  .map((block: any) => {
+    if (block.type !== 'paragraph') return '';
+    const inner = (block.children ?? []).map(renderInline).join('');
+    return `<p>${inner}</p>`;
+  })
+  .join('');
+
+function renderBlocks(blocks: any[] = []): string {
+  return blocks
+    .map((b: any) => {
+      if (!b) return '';
+      if (b.type === 'paragraph') {
+        const inner = (b.children ?? []).map(renderInline).join('');
+        return `<p>${inner}</p>`;
+      }
+      if (b.type === 'heading') {
+        const level = Math.min(Math.max(Number(b.level ?? 2), 1), 6);
+        const inner = (b.children ?? []).map(renderInline).join('');
+        return `<h${level}>${inner}</h${level}>`;
+      }
+      if (b.type === 'quote') {
+        const inner = (b.children ?? []).map(renderInline).join('');
+        return `<blockquote>${inner}</blockquote>`;
+      }
+      if (b.type === 'list') {
+        const tag = (b.format === 'ordered' || b.ordered) ? 'ol' : 'ul';
+        const items = (b.children ?? [])
+          .map((li: any) => {
+            const text =
+              (li.children ?? []).map((c: any) => {
+                if (c.type === 'paragraph') {
+                  return (c.children ?? []).map(renderInline).join('');
+                }
+                return renderInline(c);
+              }).join('');
+            return `<li>${text}</li>`;
+          })
+          .join('');
+        return `<${tag}>${items}</${tag}>`;
+      }
+      if (b.type === 'image') {
+        const url = b.url ?? b.image?.url;
+        if (!url) return '';
+        const alt = escapeHtml(b.alt ?? b.image?.alternativeText ?? '');
+        return `<img src="${url}" alt="${alt}" />`;
+      }
+      // Fallback to rendering children inline if present
+      const inner = (b.children ?? []).map(renderInline).join('');
+      return inner ? `<div>${inner}</div>` : '';
+    })
+    .join('');
+}
+---
+
+<Layout>
+
+    <div id="wrapper">
+      <header>
+        <p id="logo">Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten</p>
+        <nav id="primary">
+          <ol>
+            <li class="selected"><a href="link for home">HOME</a></li>
+            <!-- <li><a href="http://www.mappingthenation.com/index.php/about">ABOUT</a></li>
+            <li><a href="http://www.mappingthenation.com/blog">BLOG</a></li>
+            <li><a href="http://www.mappingthenation.com/index.php/contact">CONTACT</a></li> -->
+          </ol>
+        </nav>
+        <!-- use the below when the new site is live -->
+        <!-- <a id="hoa-site-link" href="http://america100maps.com" target="_blank" rel="noopener noreferrer">
+          New!! A History of America in 100 Maps
+        </a> -->
+        <div id="hoa-site-link">
+          <a href="http://america100maps.com" target="_blank" rel="noopener noreferrer">New!! A History of America in 100 Maps</a>
+        </div>
+        <nav id="secondary">
+          <p>BROWSE IMAGES</p>
+          <ol>
+            <li class=""><a href="by chapter link here">By Chapter</a>
+              <ol style="visibility: hidden;">
+                <li><a href="chapter 1 link here">CHAPTER 1</a></li>
+                <li><a href="chapter 2 link here">CHAPTER 2</a></li>
+                <li><a href="chapter 3 link here">CHAPTER 3</a></li>
+                <li><a href="chapter 4 link here">CHAPTER 4</a></li>
+                <li><a href="chapter 5 link here">CHAPTER 5</a></li>
+              </ol>
+            </li>
+            <li class=""><a href="by creator link here">By Creator</a></li>
+            <li class=""><a href="chronologically link here">Chronologically</a>
+              <ol style="visibility: hidden;">
+                <li><a href="1811-1840 period link here">1811-1840</a></li>
+                <li><a href="1841-1860 period link here">1841-1860</a></li>
+                <li><a href="1861-1870 period link here">1861-1870</a></li>
+                <li><a href="1871-1880 period link here">1871-1880</a></li>
+                <li><a href="1881-1932 period link here">1881-1932</a></li>
+              </ol>
+            </li>
+          </ol>
+
+          <!-- Search goes here -->
+          <form action="search link here">
+             <input type="hidden" name="searchType" value="composite">
+             <input type="text" name="searchText" id="header-search" value="Search this Site">
+             <input type="image" src="http://www.mappingthenation.com/img/backgrounds/header-search-submit.png" alt="GO" id="header-search-submit">
+          </form>
+          
+        </nav>
+      </header>
+    
+      <div id="content-container" class="clearfix">
+        <aside id="sidebar"> 
+        <!-- <a id="browse-chrono" href="http://www.mappingthenation.com/index.php/chronoIndex">Browse Images Chronologically</a> 
+        <a id="browse-creator" href="http://www.mappingthenation.com/index.php/creator">Browse Images by Map Creator</a> -->
+          <div class="hr"><hr></div>
+          <div id="book-promo">
+          <div>
+          <img src="http://www.mappingthenation.com/img/general/book-cover.jpg" alt="Mapping the Nation Book Cover">
+            <h3><strong>Mapping the Nation:</strong> History<br>
+     &amp; Cartography in 19th Century America</h3>
+    
+            <a id="buy-now" href="https://cdcshoppingcart.uchicago.edu/Cart/PreferredBookbuyer.aspx?PRO=MAPNAT20" target="_blank">&nbsp;<br> 
+            <strong>Buy Now</strong></a>
+            </div>
+            <p>In <em>Mapping the Nation</em>, Susan Schulten traces the rise of new forms of mapping and graphic knowledge in American life. From statistical mapping to historical atlases, Americans confronted entirely new ways to think about cartography in the nineteenth century.</p>
+            <a id="learn-more" href="link for about">Learn more about the book »</a>
+            <p style="margin-bottom: -25px;">Winner of the 2013 Hundley Award for History</p>
+            </div>
+        </aside>
+        <section id="home-content">
+          <h1><span>{info?.title}</span></h1>
+          <div set:html={renderBlocks(info?.Description ?? [])}></div>
+        </section>
+        <section id="content" class="chapter-list">
+          <h2><span>Browse Images by Book Chapter</span></h2>
+              
+            
+          <article class="chapter"> <a href="chapter 1 link here"><img src="chapter 1 map image link here" alt="Map from Chapter One"></a>
+             <h3><a href="chapter 1 link here">Chapter 1: The Graphic Foundations of American History</a></h3>
+             <p>After the Revolution, historical maps became one of the most common and appealing ways to cultivate national loyalty in young Americans. Here you can trace the origin of historical atlases and timelines, and the spread of graphic illustrations of national history.</p>
+             <p class="chapter-link"><a href="chapter 1 link here">View Chapter One Maps »</a></p>
+          </article>
+    
+            
+          <article class="chapter"> <a href="chapter 2 link here"><img src="chapter 2 map image link here" alt="Map from Chapter One"></a>
+             <h3><a href="chapter 2 link here"> Chapter 2: Capturing the Past Through Maps</a></h3>
+             <p>Antique maps may command high prices today, but this wasn't always the case. Here we examine how old maps came to be considered valuable, which was related to the rising popularity of historical atlases and the campaign to create a national archive of maps at the Library of Congress.</p>
+             <p class="chapter-link"><a href="chapter 2 link here">View Chapter Two Maps »</a></p>
+          </article>
+
+            
+          <article class="chapter"> <a href="chapter 3 link here"><img src="chapter 3 map image link here" alt="Map from Chapter One"></a>
+             <h3><a href="chapter 3 link here"> Chapter 3: Disease, Expansion, and the Rise of Environmental Mapping</a></h3>
+             <p>Here you can learn how medical men turned to maps in an urgent quest to solve the deadly mysteries of yellow fever and cholera. Their groundbreaking work was closely related to the race to map the environment in a nation that was rapidly expanding westward.</p>
+             <p class="chapter-link"><a href="chapter 3 link here">View Chapter Three Maps »</a></p>
+          </article>
+          
+            
+          <article class="chapter"> <a href="chapter 4 link here"><img src="chapter 4 map image link here" alt="Map from Chapter One"></a>
+             <h3><a href="chapter 4 link here"> Chapter 4: Slavery and the Origin of Statistical Cartography</a></h3>
+             <p>The sectional crisis sparked tremendous creativity in mapmaking, as Northerners began to use maps to measure the extent of slavery. This includes the first statistical maps of population made in the United States, which even captured the attention of President Lincoln during the Civil War.</p>
+             <p class="chapter-link"><a href="chapter 4 link here">View Chapter Four Maps »</a></p>
+          </article>
+          
+            
+          <article class="chapter"> <a href="chapter 5 link here"><img src="chapter 5 map image link here" alt="Map from Chapter One"></a>
+             <h3><a href="chapter 5 link here">Chapter 5: The Cartographic Consolidation of America</a></h3>
+             <p>After the war, the federal government sponsored the first national atlas based on the census. Here you can see how leaders experimented with cartography to measure the nation in new and unexpected ways, from the characteristics of its population to the distribution of its natural resources.</p>
+             <p class="chapter-link"><a href="chapter 5 link here">View Chapter Five Maps »</a></p>
+          </article>
+          
+    
+          
+        </section>
+      </div>
+
+    </div>
+  </Layout>

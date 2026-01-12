@@ -6,7 +6,7 @@ export interface LayoutFooter extends Struct.ComponentSchema {
     displayName: 'Footer';
   };
   attributes: {
-    linkToBook: Schema.Attribute.Component<'shared.text-link', false>;
+    linkToBook: Schema.Attribute.Component<'shared.text-link', true>;
     naviitems: Schema.Attribute.Component<'shared.link', true>;
     universitylogo: Schema.Attribute.Component<
       'shared.university-logo-link',

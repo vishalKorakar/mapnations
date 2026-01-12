@@ -1,0 +1,1114 @@
+/*
+
+	Primary Stylesheet
+	
+-------------------------------------------------------------------------------*/
+
+/* CSS Reset
+-------------------------------------------------------------------------------*/
+
+html, body, body div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}									
+
+article, aside, figure, footer, header, hgroup, nav, section {display: block;}
+
+/* Responsive images and other embedded objects */
+img,
+object,
+embed {max-width: 100%;}
+
+/* force a vertical scrollbar to prevent a jumpy page */
+html {overflow-y: scroll;}
+
+/* we use a lot of ULs that aren't bulleted. */
+ul {list-style: none;}
+
+blockquote, q {quotes: none;}
+
+blockquote:before, 
+blockquote:after, 
+q:before, 
+q:after {content: ''; content: none;}
+
+a {margin: 0; padding: 0; font-size: 100%; vertical-align: baseline; background: transparent;}
+
+del {text-decoration: line-through;}
+
+abbr[title], dfn[title] {border-bottom: 1px dotted #000; cursor: help;}
+
+/* tables still need cellspacing="0" in the markup */
+table {border-collapse: collapse; border-spacing: 0;}
+th {font-weight: bold; vertical-align: bottom;}
+td {font-weight: normal; vertical-align: top;}
+
+hr {display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0;}
+
+input, select {vertical-align: middle;}
+
+pre {
+	white-space: pre; /* CSS2 */
+	white-space: pre-wrap; /* CSS 2.1 */
+	white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+	word-wrap: break-word; /* IE */
+}
+
+input[type="radio"] {vertical-align: text-bottom;}
+input[type="checkbox"] {vertical-align: bottom; vertical-align: baseline;}
+.ie6 input {vertical-align: text-bottom;}
+
+select, input, textarea {font: 99% sans-serif;}
+
+table {font-size: inherit; font: 100%;}
+ 
+/* Accessible focus treatment
+	people.opera.com/patrickl/experiments/keyboard/test */
+a:hover, a:active {outline: none;}
+
+small {font-size: 85%;}
+
+strong, th {font-weight: bold;}
+
+td, td img {vertical-align: top;} 
+
+/* Make sure sup and sub don't screw with your line-heights
+	gist.github.com/413930 */
+sub, sup {font-size: 75%; line-height: 0; position: relative;}
+sup {top: -0.5em;}
+sub {bottom: -0.25em;}
+
+/* standardize any monospaced elements */
+pre, code, kbd, samp {font-family: monospace, sans-serif;}
+
+/* hand cursor on clickable elements */
+.clickable,
+label, 
+input[type=button], 
+input[type=submit], 
+button {cursor: pointer;}
+
+/* Webkit browsers add a 2px margin outside the chrome of form elements */
+button, input, select, textarea {margin: 0;}
+
+/* make buttons play nice in IE */
+button {width: auto; overflow: visible;}
+ 
+/* scale images in IE7 more attractively */
+.ie7 img {-ms-interpolation-mode: bicubic;}
+
+/* let's clear some floats */
+.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; overflow: hidden; }  
+.clearfix:after { clear: both; }  
+.clearfix { zoom: 1; }
+
+br.clearfloat {
+	clear: both;
+	height: 0;
+	overflow: hidden;
+}
+
+/* Globals
+-------------------------------------------------------------------------------*/
+
+body {
+	background: url(../img/backgrounds/body.jpg) center -130px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+body, select, input, textarea {color: #333;}
+
+a {color: #004146;}
+a:hover {color: #000;}
+
+ins {background-color: #fcd700; color: #000; text-decoration: none;}
+mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: bold;}
+
+@font-face {
+    font-family: 'CallunaRegular';
+    src: url('../fonts/calluna-regular-webfont.eot');
+    src: url('../fonts/calluna-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/calluna-regular-webfont.woff') format('woff'),
+         url('../fonts/calluna-regular-webfont.ttf') format('truetype'),
+         url('../fonts/calluna-regular-webfont.svg#CallunaRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CallunaSemibold';
+    src: url('../fonts/Calluna-Semibold-webfont.eot');
+    src: url('../fonts/Calluna-Semibold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Calluna-Semibold-webfont.woff') format('woff'),
+         url('../fonts/Calluna-Semibold-webfont.ttf') format('truetype'),
+         url('../fonts/Calluna-Semibold-webfont.svg#CallunaSemibold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CallunaItalic';
+    src: url('../fonts/Calluna-It-webfont.eot');
+    src: url('../fonts/Calluna-It-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Calluna-It-webfont.woff') format('woff'),
+         url('../fonts/Calluna-It-webfont.ttf') format('truetype'),
+         url('../fonts/Calluna-It-webfont.svg#CallunaItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CallunaSemiboldItalic';
+    src: url('../fonts/Calluna-SemiboldIt-webfont.eot');
+    src: url('../fonts/Calluna-SemiboldIt-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Calluna-SemiboldIt-webfont.woff') format('woff'),
+         url('../fonts/Calluna-SemiboldIt-webfont.ttf') format('truetype'),
+         url('../fonts/Calluna-SemiboldIt-webfont.svg#CallunaSemiboldItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CallunaBold';
+    src: url('../fonts/Calluna-Bold-webfont.eot');
+    src: url('../fonts/Calluna-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Calluna-Bold-webfont.woff') format('woff'),
+         url('../fonts/Calluna-Bold-webfont.ttf') format('truetype'),
+         url('../fonts/Calluna-Bold-webfont.svg#CallunaBold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'CallunaBoldItalic';
+    src: url('../fonts/Calluna-BoldIt-webfont.eot');
+    src: url('../fonts/Calluna-BoldIt-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Calluna-BoldIt-webfont.woff') format('woff'),
+         url('../fonts/Calluna-BoldIt-webfont.ttf') format('truetype'),
+         url('../fonts/Calluna-BoldIt-webfont.svg#CallunaBoldItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Structure
+-------------------------------------------------------------------------------*/
+
+#wrapper {
+	margin: 0 auto;
+	width: 1058px;
+}
+
+#content-container {
+	background: url(../img/backgrounds/content-container.png) repeat-y;
+	font-size: 14px;
+	padding: 0 20px 40px 20px;
+	/*width: 1018px;*/
+}
+
+#content {
+	color: #3d3725;
+	float: left;
+	padding: 0 0 0 40px;
+	width: 660px;
+}
+
+#content.full-width { /* used on pages w/out sidebar */
+	width: 940px;
+}
+
+
+/* Header
+-------------------------------------------------------------------------------*/
+
+header {
+	background: url(../img/backgrounds/header.png) no-repeat;
+	height: 254px;
+	padding: 0 20px 0 19px;
+	position: relative;
+	width: 1020px;
+}
+
+#logo {
+	background: url(../img/backgrounds/logo.png) no-repeat;
+	float: left;
+	height: 138px;
+	margin: 9px 0 0 0;
+	text-indent: -9999px;
+	width: 482px;
+}
+
+#logo a {
+	float: left;
+	height: 138px;
+	width: 482px;
+}
+
+
+#primary {
+	float: right;
+}
+
+#primary ol {
+	height: 100px;
+	width: 480px;
+}
+
+#primary ol li {
+	float: left;
+	height: 100px;
+	list-style-type: none;
+	width: 120px;
+}
+
+#primary ol li a {
+	color: #2f290e;
+	font-family: 'CallunaSemibold', "Times New Roman", Times, serif;
+	font-size: 14px;
+	float: left;
+	height: 70px;
+	padding: 30px 0 0 0;
+	text-decoration: none;
+	text-align: center;
+	width: 120px;
+}
+
+#primary ol li a:hover {
+	color: #AE493E;
+	text-decoration: underline;
+}
+
+
+#primary ol li.selected a,
+#primary ol li.selected a:hover {
+	color: #fff;
+	cursor: default;
+	background: url(../img/backgrounds/selected.png) no-repeat center top;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+#secondary {
+	background: url(../img/backgrounds/secondary.png) no-repeat;
+	float: left;
+	height: 58px;
+	padding: 0 40px;
+	position: absolute; top: 167px;
+	width: 940px;
+}
+
+#secondary p {
+	color: #fff;
+	float: left;
+	font-family: 'CallunaRegular', "Times New Roman", Times, serif;
+	font-size: 13px;
+	padding: 23px 30px 0 0;
+	text-shadow: 1px 1px #002529;
+}
+
+#secondary ol {
+	padding: 5px 0 0 0;
+}
+
+#secondary ol li {
+	background: url(../img/backgrounds/secondary-item.jpg) repeat-x;
+	float: left;
+	height: 43px;
+	list-style-type: none;
+	margin: 0 2px 0 0;
+}
+
+#secondary ol li a {
+	color: #fff;
+	font-family: 'CallunaRegular', "Times New Roman", Times, serif;
+	font-size: 14px;
+	float: left;
+	height: 26px;
+	padding: 17px 0 0 20px;
+	letter-spacing: .09em;
+	text-decoration: none;
+	text-align: left;
+	text-shadow: 1px 1px #002529;
+	width: 124px;
+}
+
+#secondary ol li a:hover,
+#secondary ol li.hover a {
+	background: url(../img/backgrounds/drop-down.jpg);
+}
+
+/* 
+drop-down specifics
+=----------------------------------------*/
+
+/* top lvel */
+#secondary ol { position: relative; z-index: 999;}
+#secondary ol li { zoom: 1;}
+#secondary ol li a {display: block;}
+#secondary ol li.hover,
+#secondary ol li:hover {position: relative; z-index: 999;}
+
+
+/* 
+sub items
+=----------------------------------------*/
+
+#secondary ol ol { 
+	background: url(../img/backgrounds/drop-down.jpg) no-repeat 0 -43px;
+	padding: 0;
+	position: absolute; top: 43px; left: 0; 
+	visibility: hidden; 
+	width: 144px;
+	z-index: 999;
+	box-shadow: 2px 2px 10px 0px #666;
+	-moz-box-shadow:    2px 2px 10px 0px #666;
+	-webkit-box-shadow: 2px 2px 10px 0px #666;
+}
+		
+#secondary ol ol li,
+#secondary ol ol li:hover {
+	background: none;
+	float: left;
+	height: auto; 
+	margin: 0 !important;
+	padding: 0;
+	width: 144px; 
+	z-index: 999; 
+}
+
+#secondary ol ol li a	{
+	background: url(../img/backgrounds/drop-down-item.png) no-repeat !important;
+	color: #fff !important;
+	display: inline-block; /* IE 6 & 7 Needs Inline Block */ 
+	font-size: 13px;
+	height: auto;
+	padding: 15px 20px 11px 20px;
+	width: 104px; 
+}
+
+#secondary ol ol li a span {display: none;}
+
+#secondary ol ol li a:hover {
+	background: url(../img/backgrounds/drop-down-item.png) no-repeat 0 -100px!important;
+	color: #fff !important;
+	cursor: pointer !important;
+}
+
+/* 
+search form
+=----------------------------------------*/
+
+#secondary form {
+	float: right;
+	padding: 7px 0 0 0;
+	position: relative;
+	width: 241px;
+}
+
+#secondary form input#header-search {
+	background: url(../img/backgrounds/header-search.gif) no-repeat;
+	color: #7c7456;
+	border: none;
+	float: left;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 30px;
+	height: 30px;
+	padding: 0 5px 0 10px;
+	width: 167px;
+	position: absolute;
+	z-index: 1;
+}
+
+#secondary form input#header-search:focus,
+#secondary form input.idleField {z-index: 100;}
+
+#secondary form input#header-search-submit {
+	float: left;
+	position: absolute;
+	z-index: 1; left: 182px;
+}
+
+/* Viewer Frame 
+-------------------------------------------------------------------------------*/
+#load-msg {
+	color: #962f11;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 25px;
+	font-weight: normal;
+	position:relative;
+	top:400px;
+}
+
+#button {
+	position:relative;
+	top:35px;
+	left:106px;
+}
+
+#tabs {
+	/*margin-left: 40px;
+	margin-right: 40px;*/
+}
+
+#iframe {
+	/*left: 300px;*/
+}
+
+.heading {
+	background: #BABABA;
+	font-weight: bold;
+	padding-bottom: 1em;
+	width: 120px;
+	padding: 10px;
+	font-size: 13px;
+}
+
+.mapData {
+	padding: 10px;
+	font-size: 13px;
+}
+
+/* Content 
+-------------------------------------------------------------------------------*/
+
+h1 {
+	color: #962f11;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 30px;
+	font-weight: normal;
+	margin: 0 0 30px 0;
+}
+
+h5 {
+
+	color: #004146;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-weight: normal;
+	margin: 0 0 30px 0;
+}
+
+#content h2 {
+	color: #004146;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 21px;
+	font-weight: normal;
+	margin: 10px 0 20px 0;
+}
+
+#content h2 span {
+	background: url(../img/backgrounds/header-flourish.png) no-repeat right center;
+	padding: 0 55px 0 0;
+}
+
+#content h3 {
+	color: #004146;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 18px;
+	font-weight: normal;
+	margin: 10px 0;
+}
+
+#content h4 {
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 16px;
+	font-weight: normal;
+	margin: 0 0 10px 0;
+}
+
+#content p {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 13px;
+	line-height: 1.6;
+	padding: 0 0 30px 0;
+}
+
+#content ul {
+	font-size: 13px;
+	list-style-type: disc;
+	line-height: 1.6;
+	padding: 0 0 30px 35px;
+}
+
+#content ul li {
+	padding: 0 0 7px 0;
+}
+
+#content ol {
+	font-size: 13px;
+	line-height: 1.6;
+	padding: 0 0 30px 35px;
+}
+
+#content ol li {
+	padding: 0 0 7px 0;
+}
+
+blockquote {
+	font-size: 13px;
+	background: #edede3;
+	color: #665b47;
+	font-style: italic;
+	padding: 20px 40px 0 40px;
+}
+
+/* Images and All Purpose Floats
+-------------------------------------------------------------------------------*/
+
+.alignright {
+	float:right;
+}
+
+.alignleft {
+	float:left; 
+}
+
+img.alignright {
+	float:right;
+	margin: 0 0 10px 30px;
+}
+
+img.alignleft {
+	float: left;
+	margin: 0 30px 10px 0;
+}
+
+/* Home Content 
+-------------------------------------------------------------------------------*/
+
+#home-content {
+	float: left;
+	padding: 0 0 20px 0;
+	width: 700px;
+}
+
+#home-content h1 {
+	padding: 0 0 0 40px;
+}
+
+#content.chapter-list h2 {
+	color: #962f11;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 30px;
+	margin: 0 0 20px 0;
+}
+
+#home-content h1 span {
+	background: url(../img/backgrounds/header-flourish.png) no-repeat right center;
+	padding: 0 55px 0 0;
+}
+
+.chapter-list h2 span {
+	background: url(../img/backgrounds/header-flourish.png) no-repeat right center;
+	padding: 0 55px 0 0;
+}
+
+#home-content p {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	line-height: 1.6em;
+	padding: 0 0 30px 40px;
+}
+
+p#highlight {
+	background: #e9e8da;
+	color: #6b6242;
+	clear: both;
+	float: left;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 18px;
+	margin: 0 0 30px 0; 
+	padding: 20px 0 20px 40px;
+	position: relative; left: -1px;
+	width: 660px;
+}
+
+.chapter {
+	 background: url(../img/backgrounds/chapter-top.png) top left repeat-x,
+    url(../img/backgrounds/chapter-bottom.png) bottom left repeat-x;
+	background-color: #eeede3;
+	color: #6b6242;
+	padding: 22px 10px 22px 20px;
+	margin: 0 0 30px 0;
+	min-height: 182px;
+	width: 630px;
+}
+
+.chapter a img {
+	border: 1px solid #d5cfb6;
+	float: left;
+	margin: 0 20px 0 0;
+}
+
+.chapter h3,
+.chapter h3 a {
+	color: #004146;
+	font-family: 'CallunaBold', 'Times New Roman', Times, serif;
+	font-size: 17px;
+	font-weight: normal;
+	line-height: 20px;
+	margin: 0 0 10px 0;
+	text-decoration: none;
+}
+
+.chapter h3 a strong {
+	color: #962f11;
+	font-size: 30px;
+	font-weight: normal;
+}
+
+.chapter h3 a:hover { color: #000; text-decoration: underline;}
+.chapter h3 a:hover strong {color: #962f11;}
+
+
+#content .chapter p {
+	font-size: 13px;
+	line-height: 20px;
+	padding: 0 0 10px 0;
+}
+
+#content p.chapter-link {
+	padding: 0;
+}
+.chapter-link a {
+	color: #962f11;
+	font-family: 'CallunaBoldItalic', 'Times New Roman', Times, serif;
+	font-size: 14px;
+	line-height: 18px;
+}
+.chapter-link a:hover {color: #000;}
+
+/* About Content 
+-------------------------------------------------------------------------------*/
+
+#content #book-promo {
+	float: left;
+	margin: 0 30px 40px 0;
+}
+
+#content #book-promo img {
+	border: 1px solid #cfc6a4;
+	margin: 0 0 20px 0;
+}
+
+#content #book-promo p {} 
+#content #book-promo p span {
+	background: #efefe7;
+	border-top: 1px solid #cfc6a4;
+	border-bottom: 1px solid #cfc6a4;
+	color: #004146;
+	display: block;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-size: 16px;
+	float: left;
+	height: 28px;
+	line-height: 28px;
+	padding: 0 12px;
+}
+
+#content #book-promo p a {
+	background: url(../img/backgrounds/content-buy-now-button.jpg);
+	border-top: 1px solid #cfc6a4;
+	border-bottom: 1px solid #cfc6a4;
+	color: #fff;
+	display: block;
+	font-family: 'CallunaRegular', 'Times New Roman', Times, serif;
+	font-size: 16px;
+	float: right;
+	height: 28px;
+	line-height: 28px;
+	padding: 0 25px;
+	text-decoration: none;
+	text-shadow: 1px 1px #1c4c5b;
+}
+ 
+#content #book-promo p a:hover {
+	background-position: 0 -40px;
+}
+
+/* Grid of Five
+-------------------------------------------------------------------------------*/
+
+#content.lrg-grid {} 
+
+#content.lrg-grid ol {
+	list-style-type: none;
+	padding: 10px 0 0 0;
+} 
+
+#content.lrg-grid ol li{
+	background: url(../img/backgrounds/chapter-index-li.png) #eeede3 repeat-x;
+	float: left;
+	padding: 0;
+	width: 286px;
+	margin: 0 40px 40px 0;
+}
+
+#content.lrg-grid ol li#item-3 {
+	margin: 0 0 40px 0;
+}
+
+#content.lrg-grid ol li#item-4,
+#content.lrg-grid ol li#item-5 {
+	position: relative;
+	left: 143px;
+}
+
+
+#content.lrg-grid ol li a {
+	background: url(../img/backgrounds/chapter-index-item.png) no-repeat center bottom;
+	color: #004146;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	float: left;
+	font-size: 14px;
+	line-height: 16px;
+	text-align: center;
+	text-decoration: none;
+	padding: 0 0 15px 0;
+	width: 286px;
+} 
+
+#content.lrg-grid ol li a strong {
+	font-family: 'CallunaBold', 'Times New Roman', Times, serif;
+} 
+
+#content.lrg-grid ol li a img {
+	border: 1px solid #d5cfb6;
+	margin: 0 0 5px 0;
+}
+
+#content.lrg-grid ol li a:hover {
+	color: #333229;
+	text-shadow: 1px 1px #e5e3cc;
+}
+
+#content.lrg-grid ol li a:hover img {
+	border: 1px solid #cdcbb6;
+}
+/* Search Results/ Browse Pages
+-------------------------------------------------------------------------------*/
+
+.browse article {
+	border-bottom: 1px dashed #dbd6c2;
+	float: left;
+	margin: 0 0 20px 0;
+	padding: 0 0 20px 0;
+	width: 660px;
+}
+
+.browse article a img {
+	background: #edede3;
+	border: 1px solid #d1cdbb;
+	float: left;
+	margin: 0 20px 0 0;
+	padding: 4px;
+}
+
+#content.browse article h3 { /* default used in creator pages */
+	font-size: 20px;
+	line-height: 20px;
+	margin: 0;
+	padding: 0 0 5px 0;
+}
+
+#content.chrono article h3 { /* browse images chronologically */
+	font-size: 22px;
+}
+
+#content.chapter-maps article h3 { /* images based on chapter */
+	font-size: 16px;
+	line-height: 16px;
+	padding: 0 0 10px 0;
+}
+
+#content.browse article h3 a {
+	color: #004146;
+	text-decoration: none;
+}
+
+#content.browse article h3 a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+
+
+#content.browse article p {
+	font-size: 12px;
+	line-height: 1.5;
+	padding: 0 0 7px 0;
+}
+
+#content.browse article p.map-meta {
+	color: #706544;
+	font-size: 12px;
+	font-style: normal;
+	padding: 0;
+	word-spacing: 3px;
+}
+
+#content.browse article p.map-meta a {
+	color: #962f11;
+	font-family: 'CallunaBoldItalic', 'Times New Roman', Times, serif;
+	font-size: 14px;
+	line-height: 18px;
+	word-spacing: normal;
+}
+
+#content.browse article p.map-meta a:hover {color: #000;}
+
+
+#screenshot { /* tooltip styles */
+	position: absolute;
+	background: #eeede3;
+	border: 1px solid #d1cdbb;
+	line-height: 1px;
+	padding: 10px !important;
+	display: none;
+	color: #fff;
+	box-shadow: 2px 2px 4px 0px #494836;
+	-moz-box-shadow:    2px 2px 4px 0px #494836;
+	-webkit-box-shadow: 2px 2px 4px 0px #494836;
+
+}
+
+
+
+/* Sidebar 
+-------------------------------------------------------------------------------*/
+
+aside {
+	float: right;
+	width: 240px;
+	padding: 0 40px 0 0;
+}
+
+#browse-chrono,
+#browse-creator,
+#browse-chapter {
+	background: url(../img/backgrounds/browse-chrono.jpg);
+	float: left;
+	height: 51px;
+	margin: 0 0 12px 0;
+	overflow: hidden;
+	text-indent: -9999px;
+	width: 240px;
+}
+
+#browse-creator { background: url(../img/backgrounds/browse-creator.jpg);}
+#browse-chapter { background:url(../img/backgrounds/browse-chapter.jpg);}
+
+#browse-chrono:hover,
+#browse-creator:hover,
+#browse-chapter:hover {
+	background-position: 0 -51px;
+}
+
+#sidebar div.hr {
+	background: url(../img/backgrounds/sidebar-flourish.png) no-repeat center top;
+	float: left;
+	height: 40px;
+	margin: 10px 0 20px 0;
+	width: 240px;
+}
+
+#sidebar div.hr hr{display: none;}
+
+#sidebar #book-promo {
+	 background: url(../img/backgrounds/book-promo-top.png) top left repeat-x,
+    url(../img/backgrounds/book-promo-bottom.png) bottom left repeat-x;
+	background-color: #eeede3;
+	color: #6b6242;
+	float: left;
+	margin: 0 0 30px 0;
+	padding: 0 0 30px 0;
+}
+
+#sidebar #book-promo div {
+	padding: 20px 10px 20px 20px;
+}
+
+#sidebar #book-promo img {
+	border: 1px solid #c4b88d;
+	float: left;
+	margin: 0 10px 0 0;
+}
+
+#sidebar #book-promo h3 {
+	color: #004146;
+	font-family: 'CallunaSemiboldItalic', 'Times New Roman', Times, serif;
+	font-size: 13px;
+	font-weight: normal;
+	height: 92px;
+	line-height: 17px;
+	margin: 0;
+}
+
+#sidebar #book-promo h3 strong {
+	font-family: 'CallunaBoldItalic', 'Times New Roman', Times, serif;
+}
+
+
+#sidebar a#buy-now {
+	background: url(../img/backgrounds/buy-now.jpg);
+	color: #004146;
+	height: 59px;
+	float: left;
+	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
+	font-weight: normal;
+	line-height: 30px;
+	text-align: center;
+	text-decoration: none;
+	width: 86px;
+}
+
+#sidebar a#buy-now strong {
+	color: #fff;
+	font-weight: normal;
+	text-shadow: 1px 1px #83210a;
+}
+
+#sidebar a#buy-now:hover {
+	background-position: 0 -59px;
+}
+
+#sidebar #book-promo p {
+	font-size: 11px; line-height: 18px;
+	clear: both;
+	padding: 20px;
+	text-align: justify;
+}
+
+#sidebar a#learn-more {
+	background: url(../img/backgrounds/sidebar-learn-more.png);
+	color: #a63613;
+	font-family: 'CallunaBold', 'Times New Roman', Times, serif;
+	float: left;
+	font-size: 14px;
+	height: 34px;
+	line-height: 34px;
+	text-align: center;
+	text-decoration: none;
+	width: 240px;
+}
+
+#sidebar a#learn-more:hover {
+	color: #000;
+	text-decoration: underline;
+}
+
+/*#hoa-site-link {
+	float: right;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 20px;
+    position: relative;
+    bottom: 30px;
+}*/
+
+#hoa-site-link {
+	display: inline-block;
+	background: #962f11;
+	padding: 7px 10px;
+	float: right;
+	position: relative;
+	bottom: 30px;
+    
+	color: white;
+	font-family: 'CallunaSemibold', "Times New Roman", Times, serif;
+	font-size: 14px;
+	font-weight: bold;
+	text-decoration: none;
+  }
+  
+  #hoa-site-link:hover {
+	background: #7c240d;
+  }
+
+
+/* Footer new
+-------------------------------------------------------------------------------*/
+footer {
+	background: url(../img/backgrounds/footer.png) no-repeat;
+	color: #6b6242;
+	font-family: 'CallunaBold', 'Times New Roman', Times, serif;
+	padding: 15px 20px 30px 60px;
+	width: 978px;
+}
+#footer-nav ol {
+	float: left;
+}
+
+#footer-nav ol li {
+	border-right: 1px solid #e6dcb2;
+	float: left;
+	height: 30px;
+	list-style-type: none;
+	margin: 0 20px 0 0;
+	padding: 0 20px 0 0;
+}
+
+#footer-nav ol li a {
+	color: #6b6242;
+	font-size: 12px;
+	float: left;
+	line-height: 30px;
+	text-decoration: none;
+	text-align: center;
+}
+
+#footer-nav ol li a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+
+footer p {
+	float: left;
+	font-size: 12px;
+	line-height: 30px;
+}
+
+footer p a {color: #6b6242;}
+
+footer p#du-penrose {
+	background: url(../img/backgrounds/du-ulibraries-logo.png) no-repeat;
+	float: left;
+	height: 45px;
+	width: 100px;
+	margin: 5px 0 0 50px;
+	text-indent: -9999px;
+}
+
+footer p#du-penrose a {
+	float: left;
+	height: 45px;
+	width: 100px;
+	text-indent: -9999px;
+}
+
+
+
+footer p#footer-credit {
+	background: url(../img/backgrounds/footer-credit.png) no-repeat;
+	float: right;
+	height: 33px;
+	width: 138px;
+	text-indent: -9999px;
+	margin-right: 30px;
+}
+
+footer p#footer-credit a {
+	float: right;
+	height: 33px;
+	width: 138px;
+	margin-right: 30px;
+}
+
+
+
