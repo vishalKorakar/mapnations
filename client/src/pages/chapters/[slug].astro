@@ -1,0 +1,49 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MapCard from "../../components/MapCard.astro";
+import { fetchChapters, fetchChapterBySlug } from "../../lib/strapi";
+import Footer from '../../components/footer.astro';
+import Header from '../../components/header.astro';
+
+// ✅ REQUIRED for dynamic routes in Astro SSG
+export async function getStaticPaths() {
+  const chapters = await fetchChapters();
+
+  return (chapters ?? []).map((c: any) => ({
+    params: { slug: c.slug },
+  }));
+}
+
+// ✅ get slug from URL
+const { slug } = Astro.params;
+
+// ✅ fetch current chapter
+const chapter = await fetchChapterBySlug(slug);
+
+if (!chapter) {
+  return Astro.redirect("/404");
+}
+
+const maps: any[] = chapter?.maps ?? [];
+---
+<Layout>
+  
+  <div id="wrapper">
+    <Header />
+  <div id="content-container" class="clearfix">
+    <section id="content" class="browse chapter-maps">
+      <h1>{chapter.title}</h1>
+
+      {chapter.Description && <p>{chapter.Description}</p>}
+
+      {maps.length === 0 ? (
+        <p>No maps found for this chapter.</p>
+      ) : (
+        maps.map((map: any) => <MapCard map={map} />)
+      )}
+    </section>
+  </div>
+  <Footer />
+  </div>
+  
+</Layout>

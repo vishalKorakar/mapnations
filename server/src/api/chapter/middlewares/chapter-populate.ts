@@ -10,7 +10,8 @@ export default (config, { strapi }: { strapi: Core.Strapi }) => {
   return async (ctx, next) => {
     console.log(ctx.query);
     ctx.query.populate = {
-        maps: true
+        maps: true,
+        chapterImage: true
     };
     strapi.log.info('In chapter-populate middleware.');
 

@@ -1,0 +1,46 @@
+---
+import { fetchChapters } from "../lib/strapi";
+import { STRAPI_URL } from "../lib/strapi.js";
+
+const chapters = await fetchChapters();
+
+// ✅ Build a clean array with everything ready for rendering
+const chapterItems = (chapters ?? []).map((c: any) => {
+  const title = c?.title ?? "";
+  const slug = c?.slug ?? "";
+  const Description = c?.Description ?? "";
+
+  const thumb =
+    c?.chapterImage?.formats?.thumbnail?.url ||
+    "";
+
+  return {
+    title,
+    slug,
+    Description,
+    imageUrl: thumb ? `${STRAPI_URL}${thumb}` : "",
+  };
+});
+---
+
+<section id="content" class="chapter-list">
+  <h2><span>Browse Images by Book Chapter</span></h2>
+
+  {chapterItems.map((c: any) => (
+    <article class="chapter">
+      <a href={`/chapters/${c.slug}`}>
+        {c.imageUrl && <img src={c.imageUrl} alt={`${c.title} image`} />}
+      </a>
+
+      <h3>
+        <a href={`/chapters/${c.slug}`}>{c.title}</a>
+      </h3>
+
+      {c.Description && <p>{c.Description}</p>}
+
+      <p class="chapter-link">
+        <a href={`/chapters/${c.slug}`}>View {c.title} Maps »</a>
+      </p>
+    </article>
+  ))}
+</section>
