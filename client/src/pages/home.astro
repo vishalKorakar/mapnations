@@ -1,73 +1,63 @@
 ---
-import Layout from '../layouts/Layout.astro';
 import { fetchPages } from '../lib/strapi';
-import Menu from '../components/menu.astro';
 import Header from '../components/header.astro';
 import Book from '../components/book.astro';
 import Footer from '../components/footer.astro';
-// import ChapterList from '../components/chapter.astro';
+import Chapter from '../components/chapters.astro';
+
+import { renderInline, renderBlocks } from '../lib/render';
+
 const pages = await fetchPages();
 const pageItems = (pages ?? []).map((p: any) => ({
   id: p?.id ?? '',
-  title: p?.attributes?.title ?? '',
-  slug: p?.attributes?.slug ?? ''
+  title: p?.title ?? '',
+  slug: p?.slug ?? ''
 }));
 
+
+
+const info = pages[2]?.Sections?.find((s:any)=>s.__component==='sections.information');
+const blocks = info?.Description ?? [];
+const firstPara = blocks.find((b:any)=>b.type==='paragraph');
+const restBlocks = blocks.filter((b:any,i:number)=>b!==firstPara);
 ---
+
+
     <div id="wrapper">
       <Header />
       <Book />
     
       <div id="content-container" class="clearfix">
         
-        <section id="home-content">
-          <h1><span>How Maps Became Modern</span></h1>
-          <p id="highlight"><strong>Welcome!</strong> <br> This is a companion site to the book, <em>Mapping the Nation</em>, which explores a tremendously creative era in American cartography.</p>
+        <!-- <section id="home-content">
+          <h1><span>{pages[2]?.Sections[0]?.title}</span></h1>
+          <p id="highlight">{pages[2]?.Sections[0]?.Description[0].children[0].text} <br> This is a companion site to the book, <em>Mapping the Nation</em>, which explores a tremendously creative era in American cartography.</p>
           <p> From maps of disease and the weather to the earliest maps of the national population, this was a period when the very concept of a map was reinvented. By the early twentieth century, maps had become common tools of analysis, communication, and visual representation in an increasingly complex nation.</p>
           <p> Today we live in a world that is saturated with maps and graphic knowledge. The maps on this site reveal how this involved a fundamentally new way of thinking.</p>
+        </section> -->
+
+        <section id="home-content">
+          <h1><span>{info?.title}</span></h1>
+        
+          {firstPara && (
+            <p id="highlight" set:html={(firstPara.children??[]).map(renderInline).join('')}></p>
+          )}
+        
+          <div set:html={renderBlocks(restBlocks)}></div>
         </section>
-        <section id="content" class="chapter-list">
+
+        <Chapter />
+
+        <!-- <section id="content" class="chapter-list">
           <h2><span>Browse Pages</span></h2>
-          {pageItems.map((p: any) => (
+          {Chapter.map((p: any) => (
             <article class="chapter">
               <h3><a href={`/${p?.slug}`}>{p?.title}</a></h3>
             </article>
           ))}
-        </section>
+        </section> -->
       </div>
     </div>
     <Footer />
 
-    <article class="chapter"> <a href="chapter 1 link here"><img src="chapter 1 map image link here" alt="Map from Chapter One"></a>
-      <h3><a href="chapter 1 link here">Chapter 1: The Graphic Foundations of American History</a></h3>
-      <p>After the Revolution, historical maps became one of the most common and appealing ways to cultivate national loyalty in young Americans. Here you can trace the origin of historical atlases and timelines, and the spread of graphic illustrations of national history.</p>
-      <p class="chapter-link"><a href="chapter 1 link here">View Chapter One Maps »</a></p>
-   </article>
-
-     
-   <article class="chapter"> <a href="chapter 2 link here"><img src="chapter 2 map image link here" alt="Map from Chapter One"></a>
-      <h3><a href="chapter 2 link here"> Chapter 2: Capturing the Past Through Maps</a></h3>
-      <p>Antique maps may command high prices today, but this wasn't always the case. Here we examine how old maps came to be considered valuable, which was related to the rising popularity of historical atlases and the campaign to create a national archive of maps at the Library of Congress.</p>
-      <p class="chapter-link"><a href="chapter 2 link here">View Chapter Two Maps »</a></p>
-   </article>
-
-     
-   <article class="chapter"> <a href="chapter 3 link here"><img src="chapter 3 map image link here" alt="Map from Chapter One"></a>
-      <h3><a href="chapter 3 link here"> Chapter 3: Disease, Expansion, and the Rise of Environmental Mapping</a></h3>
-      <p>Here you can learn how medical men turned to maps in an urgent quest to solve the deadly mysteries of yellow fever and cholera. Their groundbreaking work was closely related to the race to map the environment in a nation that was rapidly expanding westward.</p>
-      <p class="chapter-link"><a href="chapter 3 link here">View Chapter Three Maps »</a></p>
-   </article>
-   
-     
-   <article class="chapter"> <a href="chapter 4 link here"><img src="chapter 4 map image link here" alt="Map from Chapter One"></a>
-      <h3><a href="chapter 4 link here"> Chapter 4: Slavery and the Origin of Statistical Cartography</a></h3>
-      <p>The sectional crisis sparked tremendous creativity in mapmaking, as Northerners began to use maps to measure the extent of slavery. This includes the first statistical maps of population made in the United States, which even captured the attention of President Lincoln during the Civil War.</p>
-      <p class="chapter-link"><a href="chapter 4 link here">View Chapter Four Maps »</a></p>
-   </article>
-   
-     
-   <article class="chapter"> <a href="chapter 5 link here"><img src="chapter 5 map image link here" alt="Map from Chapter One"></a>
-      <h3><a href="chapter 5 link here">Chapter 5: The Cartographic Consolidation of America</a></h3>
-      <p>After the war, the federal government sponsored the first national atlas based on the census. Here you can see how leaders experimented with cartography to measure the nation in new and unexpected ways, from the characteristics of its population to the distribution of its natural resources.</p>
-      <p class="chapter-link"><a href="chapter 5 link here">View Chapter Five Maps »</a></p>
-   </article>
+    
