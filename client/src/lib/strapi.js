@@ -28,7 +28,7 @@ export async function fetchPages() {
 
 export async function fetchPageBySlug(slug) {
   const json = await strapiFetch(
-    `/api/pages/${encodeURIComponent(slug)}`
+    `/api/pages?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*&sort[0]=id:asc`
   );
   return json.data?.[0] ?? null;
 }

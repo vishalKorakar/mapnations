@@ -4,7 +4,7 @@ import Header from '../components/header.astro';
 import Book from '../components/book.astro';
 import Footer from '../components/footer.astro';
 import Chapter from '../components/chapters.astro';
-
+import Layout from '../layouts/Layout.astro';
 import { renderInline, renderBlocks } from '../lib/render';
 
 const pages = await fetchPages();
@@ -16,13 +16,13 @@ const pageItems = (pages ?? []).map((p: any) => ({
 
 
 
-const info = pages[2]?.Sections?.find((s:any)=>s.__component==='sections.information');
+const info = pages[1]?.Sections?.find((s:any)=>s.__component==='sections.information');
 const blocks = info?.Description ?? [];
 const firstPara = blocks.find((b:any)=>b.type==='paragraph');
 const restBlocks = blocks.filter((b:any,i:number)=>b!==firstPara);
 ---
 
-
+<Layout>
     <div id="wrapper">
       <Header />
       <Book />
@@ -60,4 +60,4 @@ const restBlocks = blocks.filter((b:any,i:number)=>b!==firstPara);
     </div>
     <Footer />
 
-    
+</Layout>

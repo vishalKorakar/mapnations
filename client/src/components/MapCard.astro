@@ -1,5 +1,7 @@
 ---
+import { STRAPI_URL }  from '../lib/strapi.js';
 const { map } = Astro.props;
+
 
 // These depend on how you store fields in Strapi:
 const title = map?.mapTitle ?? "Untitled map";
@@ -9,7 +11,7 @@ const author = map?.creatorName ?? ""; // example: "Ramsay, David"
 const slug = map?.slug ?? "";
 
 // If you store image under featuredImage
-const img = map?.featuredImage?.url || map?.thumbnail?.url || map?.image?.url || null;
+const img = map?.image?.formats?.thumbnail?.url || null;
 
 // If you store external viewer URL directly (recommended)
 const viewerUrl = map?.viewerUrl || (slug ? `/maps/${slug}` : "#");
@@ -17,7 +19,11 @@ const viewerUrl = map?.viewerUrl || (slug ? `/maps/${slug}` : "#");
 
 <article>
   <a href={viewerUrl}>
-    {img && <img alt="Map TN" src={img} />}
+    {img && <img alt="Map TN" src={`${STRAPI_URL}${img}`},
+    width="100"
+    height="100"
+    loading="lazy"
+    decoding="async" />}
   </a>
 
   <h3>
@@ -27,7 +33,7 @@ const viewerUrl = map?.viewerUrl || (slug ? `/maps/${slug}` : "#");
   {desc && <p>{desc}</p>}
 
   <p class="map-meta">
-    {year && <span>({year})</span>}
+    {year && <span>{year}</span>}
     {year && author && <span> | </span>}
     {author && <span>{author}</span>}
     <span> | </span>

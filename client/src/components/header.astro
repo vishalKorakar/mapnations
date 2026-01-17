@@ -3,6 +3,15 @@ const { global } = Astro.props;
 const logoUrl = global?.logo?.url ?? "/favicon.svg";
 const hoaUrl = global?.hoaLink?.url ?? "http://america100maps.com";
 import Menu from '../components/menu.astro';
+
+const nav = [
+  { label: 'HOME', href: '/' },
+  { label: 'ABOUT', href: '/about' },
+  { label: 'BLOG', href: '/blog' },
+  { label: 'CONTACT', href: '/contact' },
+];
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 ---
 
 <header>
@@ -11,14 +20,17 @@ import Menu from '../components/menu.astro';
       <img src={logoUrl} alt="Mapping the Nation" width="400" height="90" loading="lazy" decoding="async" />
     </a>
 
-  <nav id="primary">
-    <ol>
-      <li class="selected"><a href="/">HOME</a></li>
-      <li><a href="/about">ABOUT</a></li>
-      <li><a href="/blog">BLOG</a></li>
-      <li><a href="/contact">CONTACT</a></li>
-    </ol>
-  </nav>
+    <nav id="primary">
+      <ol>
+        {nav.map((item) => (
+          <li class={isActive(item.href) ? 'selected' : ''}>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
 
   <Menu />
 

@@ -1,0 +1,116 @@
+---
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
+import { fetchPageBySlug } from '../lib/strapi';
+import Layout from '../layouts/Layout.astro';
+import { renderBlocks } from '../lib/render';
+import { record } from 'astro:schema';
+const pages = await fetchPageBySlug('about');
+
+if (!pages) {
+  throw new Response('Contact page not found', { status: 404 });
+}
+
+const attr = pages.attributes ?? pages;
+
+const infos = (attr.Sections ?? []).filter(
+  (s: any) => s.__component === 'sections.information'
+).slice(0, 1);
+
+const book = (attr.Sections ?? []).filter(
+  (s: any) => s.__component === 'sections.information'
+).slice(1, 2);
+
+const author = (attr.Sections ?? []).filter(
+  (s: any) => s.__component === 'sections.information'
+).slice(2, 3);
+
+const reviews = (attr.Sections ?? []).filter(
+  (s: any) => s.__component === 'sections.information'
+).slice(3, 4);
+---
+<Layout>
+    <div id="wrapper">
+      <Header />
+      <div id="content-container" class="clearfix">
+        <section id="content">
+
+            {infos.map((p: any) => (
+                <>
+                    {p.title && <h1><span>{p?.title}</span></h1>}
+                    <div set:html={renderBlocks(p?.Description)}></div>
+                </>
+            ))
+            }
+
+            <br class="clearfloat"><br class="clearfloat">
+
+            {book.map((b: any) => (
+                <>
+                <h2><span>{b?.title}</span></h2>
+                <center><h5><em>{b?.Description[0]?.children[0]?.text}</em></h5></center>
+                <div id="book-promo">
+                    <img src={b?.Description[4]?.image?.url} alt={b?.Description[4]?.image?.alternativeText} />
+                    <p><a href={b?.Description[6]?.children[1]?.url} target="_blank">Buy Now</a></p>
+
+                </div>
+                
+                <p>{b?.Description[1]?.children[0]?.text}</p>
+                <p>{b?.Description[2]?.children[0]?.text}</p>
+                </>
+                
+            ))
+            }
+            
+            <br class="clearfloat"><br class="clearfloat">
+
+            <!-- About the Author -->
+            {author.map((a: any) => (
+                <>
+                    {a.title && <h2><span>{a?.title}</span></h2>}
+                    <img class="alignleft" src="http://www.mappingthenation.com/img/general/susan-schulten-portrait.jpg" alt="Susan Schulten Portrait"></img>
+                    <div set:html={renderBlocks(a?.Description)}></div></>
+                
+            ))
+            }
+
+            <br class="clearfloat"><br class="clearfloat">
+
+            <!-- About the Author -->
+            {reviews.map((r: any) => (
+                <>
+                    {r.title && <h2><span>{r?.title}</span></h2>}
+                    <blockquote>
+                    <p set:html={renderBlocks(r?.Description)}></p>
+                    </blockquote>
+                </>
+                
+            ))
+            }
+
+        </section>
+
+            
+            
+            <!-- <br class="clearfloat"><br class="clearfloat">
+            
+            <h2><span>Praise for <em>Mapping The Nation</em></span></h2>                 
+            
+            
+            <p>
+            In a work of deep scholarship and insight, Susan Schulten traces the origins of a now-ubiquitous presence in American life: maps with a story to tell. Schulten uncovers not only a fascinating panorama of maps but also a colorful array of characters who taught America to see itself in new ways. Read this book and maps will never look the same.”—Edward Ayers, University of Richmond
+            </p>
+                  
+            <p>
+                Susan Schulten has produced an impressive synthesis of some of the most important developments in nineteenth-century American cartography, tracing the ways that maps became tools of social organization, governance, and economics. Engaging and informative, <em>Mapping the Nation</em> is a novel and persuasive look at American history, visually and cartographically.”— Mark Monmonier, Syracuse University  
+            </p>  
+            
+            <p>
+               In this important study of the way in which nineteenth-century Americans represented their social and natural worlds, Susan Schulten illuminates how weather, disease, slavery, and the aggregate reality of the census could all be represented in visual and spatial terms. This is an important contribution not only to America’s cultural and disciplinary history, but to the history of government and our shared sense of history itself.”—Charles Rosenberg, Harvard University   
+            </p>
+             </blockquote>
+        </section> -->
+    </div>
+    <Footer />
+    </div>
+</Layout>
