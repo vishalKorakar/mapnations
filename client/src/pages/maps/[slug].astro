@@ -1,0 +1,239 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { fetchMaps, fetchMapBySlug, STRAPI_URL } from '../../lib/strapi';
+import Header from '../../components/header.astro';
+import Footer from '../../components/footer.astro';
+
+// Get all maps for static paths
+export async function getStaticPaths() {
+  const maps = await fetchMaps();
+  return maps.map((map: any) => ({
+    params: { slug: map.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const map = await fetchMapBySlug(slug);
+
+if (!map) {
+  return Astro.redirect('/404');
+}
+
+// Get full-size image URL
+const getImageUrl = (format?: string) => {
+  const img = map.image;
+  if (!img) return null;
+  
+  if (format && img.formats?.[format]) {
+    return `${STRAPI_URL}${img.formats[format].url}`;
+  }
+  return img.url ? `${STRAPI_URL}${img.url}` : null;
+};
+
+const fullImageUrl = getImageUrl();
+
+// Get all maps for navigation
+const allMaps = await fetchMaps();
+const currentIndex = allMaps.findIndex((m: any) => m.slug === slug);
+const prevMap = currentIndex > 0 ? allMaps[currentIndex - 1] : null;
+const nextMap = currentIndex < allMaps.length - 1 ? allMaps[currentIndex + 1] : null;
+const firstMap = allMaps[0];
+const lastMap = allMaps[allMaps.length - 1];
+
+// Metadata fields to display (add AdminstrativeNotes and LocalIdentifiers)
+const metadata = [
+  { label: 'Title', value: map.mapTitle },
+  { label: 'Alternate Title', value: map.AlternateTitle },
+  { label: 'Creator', value: map.creatorName, isLink: true, searchIn: 'creator' },
+  { label: 'Type of Resource', value: map.TypeofResource },
+  { label: 'Date Created', value: map.DateCreated },
+  { label: 'Digital Origin', value: map.DigitalOrigin },
+  { label: 'Topics', value: map.Topics, isLink: true, searchIn: 'topic' },
+  { label: 'Places', value: map.Places },
+  { label: 'Dates', value: map.Dates },
+  { label: 'Subject Genre', value: map.SubjectGenre },
+  { label: 'Handle', value: map.Handle },
+  { label: 'Rights Statement', value: map.RightsStatement },
+  { label: 'Publisher', value: map.Publisher },
+  { label: 'Language', value: map.Language },
+  { label: 'Extent', value: map.Extent },
+  { label: 'Physical Note', value: map.PhysicalNote },
+  { label: 'Scale', value: map.Scale },
+  { label: 'Coordinates', value: map.Coordinates },
+  { label: 'Notes', value: map.Notes },
+  { label: 'Administrative Notes', value: map.AdministrativeNotes },
+  { label: 'Local Identifiers', value: map.LocalIdentifiers },
+].filter((item) => item.value);
+---
+
+<Layout>
+    <div id="wrapper">
+    <Header />
+  <div id="content-container">
+    
+    <!-- Navigation -->
+    <table class="map-nav-table">
+      <tbody>
+        <tr>
+          <td class="nav-spacer">&nbsp;</td>
+          <td class="nav-cell">
+            {firstMap && currentIndex > 0 ? (
+              <a class="duViewerLink" href={`/maps/${firstMap.slug}`}>First</a>
+            ) : (
+              <span class="disabled-link">First</span>
+            )}
+          </td>
+          <td class="nav-cell nav-cell-wide">
+            {prevMap ? (
+              <a class="duViewerLink" href={`/maps/${prevMap.slug}`}>Previous</a>
+            ) : (
+              <span class="disabled-link">Previous</span>
+            )}
+          </td>
+          <td class="nav-cell">
+            {nextMap ? (
+              <a class="duViewerLink" href={`/maps/${nextMap.slug}`}>Next</a>
+            ) : (
+              <span class="disabled-link">Next</span>
+            )}
+          </td>
+          <td class="nav-cell">
+            {lastMap && currentIndex < allMaps.length - 1 ? (
+              <a class="duViewerLink" href={`/maps/${lastMap.slug}`}>Last</a>
+            ) : (
+              <span class="disabled-link">Last</span>
+            )}
+          </td>
+          <td class="nav-spacer-end">&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Tabs -->
+    <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+      <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+        <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="tabs-1" aria-labelledby="ui-id-1" aria-selected="true">
+          <a href="#tabs-1" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-1">Viewer</a>
+        </li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-2" aria-labelledby="ui-id-2" aria-selected="false">
+          <a href="#tabs-2" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-2">Overview</a>
+        </li>
+      </ul>
+
+      <!-- Viewer Tab -->
+      <div id="tabs-1" aria-labelledby="ui-id-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="true" aria-hidden="false">
+        <div id="iframe" class="viewer-container">
+          <div id="load-msg" class="load-msg" style="visibility: hidden;">Loading map...</div>
+          
+          {fullImageUrl ? (
+            <div class="map-viewer">
+              <img 
+                id="map-image" 
+                src={fullImageUrl} 
+                alt={map.mapTitle}
+              />
+            </div>
+          ) : (
+            <p>No image available for this map.</p>
+          )}
+        </div>
+      </div>
+
+      <!-- Overview Tab -->
+      <div id="tabs-2" aria-labelledby="ui-id-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true">
+        
+        <table class="metadata-table">
+          <tbody>
+            {metadata.map((item) => (
+              <tr>
+                <td class="heading">{item.label}</td>
+                <td class="mapData">
+                  {item.isLink ? (
+                    <a href={`/search?searchText=${encodeURIComponent(item.value)}&searchIn=${item.searchIn || ''}`}>
+                      {item.value}
+                    </a>
+                  ) : (
+                    <Fragment set:html={String(item.value).replace(/\n/g, '<br>')} />
+                  )}
+                  <br />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {map.Description && (
+          <table class="metadata-table" style="margin-top: 20px;">
+            <tbody>
+              <tr>
+                <td class="heading">Description</td>
+                <td class="mapData">{map.Description}<br /></td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+
+      </div>
+    </div>
+  </div>
+  </div>
+  <Footer />
+</Layout>
+
+<script>
+  // Tab switching functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.ui-tabs-nav li');
+    const panel1 = document.getElementById('tabs-1');
+    const panel2 = document.getElementById('tabs-2');
+    
+    if (!panel1 || !panel2) return;
+    
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Update tab states
+        tabs.forEach((t) => {
+          t.classList.remove('ui-tabs-active', 'ui-state-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('ui-tabs-active', 'ui-state-active');
+        tab.setAttribute('aria-selected', 'true');
+        
+        // Update panel visibility
+        if (index === 0) {
+          panel1.style.display = 'block';
+          panel1.setAttribute('aria-hidden', 'false');
+          panel1.setAttribute('aria-expanded', 'true');
+          panel2.style.display = 'none';
+          panel2.setAttribute('aria-hidden', 'true');
+          panel2.setAttribute('aria-expanded', 'false');
+        } else {
+          panel1.style.display = 'none';
+          panel1.setAttribute('aria-hidden', 'true');
+          panel1.setAttribute('aria-expanded', 'false');
+          panel2.style.display = 'block';
+          panel2.setAttribute('aria-hidden', 'false');
+          panel2.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // Simple zoom on image click
+    const mapImage = document.getElementById('map-image') as HTMLImageElement | null;
+    if (mapImage) {
+      let zoomed = false;
+      mapImage.addEventListener('click', () => {
+        if (zoomed) {
+          mapImage.style.transform = 'scale(1)';
+          mapImage.style.cursor = 'zoom-in';
+        } else {
+          mapImage.style.transform = 'scale(2)';
+          mapImage.style.cursor = 'zoom-out';
+        }
+        zoomed = !zoomed;
+      });
+    }
+  });
+</script>

@@ -117,7 +117,7 @@ br.clearfloat {
 -------------------------------------------------------------------------------*/
 
 body {
-	background: url(../img/backgrounds/body.jpg) center -130px;
+	background: url(/img/backgrounds/body.jpg) center -130px;
 	font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -205,7 +205,7 @@ mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: b
 }
 
 #content-container {
-	background: url(../img/backgrounds/content-container.png) repeat-y;
+	background: url(/img/backgrounds/content-container.png) repeat-y;
 	font-size: 14px;
 	padding: 0 20px 40px 20px;
 	/*width: 1018px;*/
@@ -227,7 +227,7 @@ mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: b
 -------------------------------------------------------------------------------*/
 
 header {
-	background: url(../img/backgrounds/header.png) no-repeat;
+	background: url(/img/backgrounds/header.png) no-repeat;
 	height: 254px;
 	padding: 0 20px 0 19px;
 	position: relative;
@@ -235,7 +235,7 @@ header {
 }
 
 #logo {
-	background: url(../img/backgrounds/logo.png) no-repeat;
+	background: url(/img/backgrounds/logo.png) no-repeat;
 	float: left;
 	height: 138px;
 	margin: 9px 0 0 0;
@@ -288,13 +288,13 @@ header {
 #primary ol li.selected a:hover {
 	color: #fff;
 	cursor: default;
-	background: url(../img/backgrounds/selected.png) no-repeat center top;
+	background: url(/img/backgrounds/selected.png) no-repeat center top;
 	font-weight: normal;
 	text-decoration: none;
 }
 
 #secondary {
-	background: url(../img/backgrounds/secondary.png) no-repeat;
+	background: url(/img/backgrounds/secondary.png) no-repeat;
 	float: left;
 	height: 58px;
 	padding: 0 40px;
@@ -316,7 +316,7 @@ header {
 }
 
 #secondary ol li {
-	background: url(../img/backgrounds/secondary-item.jpg) repeat-x;
+	background: url(/img/backgrounds/secondary-item.jpg) repeat-x;
 	float: left;
 	height: 43px;
 	list-style-type: none;
@@ -339,7 +339,7 @@ header {
 
 #secondary ol li a:hover,
 #secondary ol li.hover a {
-	background: url(../img/backgrounds/drop-down.jpg);
+	background: url(/img/backgrounds/drop-down.jpg);
 }
 
 /* 
@@ -359,7 +359,7 @@ sub items
 =----------------------------------------*/
 
 #secondary ol ol { 
-	background: url(../img/backgrounds/drop-down.jpg) no-repeat 0 -43px;
+	background: url(/img/backgrounds/drop-down.jpg) no-repeat 0 -43px;
 	padding: 0;
 	position: absolute; top: 43px; left: 0; 
 	visibility: hidden; 
@@ -368,6 +368,11 @@ sub items
 	box-shadow: 2px 2px 10px 0px #666;
 	-moz-box-shadow:    2px 2px 10px 0px #666;
 	-webkit-box-shadow: 2px 2px 10px 0px #666;
+}
+
+/* Show dropdown on hover */
+#secondary ol li:hover > ol {
+	visibility: visible;
 }
 		
 #secondary ol ol li,
@@ -382,7 +387,7 @@ sub items
 }
 
 #secondary ol ol li a	{
-	background: url(../img/backgrounds/drop-down-item.png) no-repeat !important;
+	background: url(/img/backgrounds/drop-down-item.png) no-repeat !important;
 	color: #fff !important;
 	display: inline-block; /* IE 6 & 7 Needs Inline Block */ 
 	font-size: 13px;
@@ -394,7 +399,7 @@ sub items
 #secondary ol ol li a span {display: none;}
 
 #secondary ol ol li a:hover {
-	background: url(../img/backgrounds/drop-down-item.png) no-repeat 0 -100px!important;
+	background: url(/img/backgrounds/drop-down-item.png) no-repeat 0 -100px!important;
 	color: #fff !important;
 	cursor: pointer !important;
 }
@@ -411,7 +416,7 @@ search form
 }
 
 #secondary form input#header-search {
-	background: url(../img/backgrounds/header-search.gif) no-repeat;
+	background: url(/img/backgrounds/header-search.gif) no-repeat;
 	color: #7c7456;
 	border: none;
 	float: left;
@@ -474,6 +479,37 @@ search form
 	font-size: 13px;
 }
 
+.mapData a {
+	color: #962f11;
+	text-decoration: underline;
+}
+
+/* Map Page Navigation */
+.map-nav-table { width: 100%; margin: 0 auto; text-align: center; }
+.nav-spacer { width: 130px; padding-bottom: 1em; }
+.nav-spacer-end { width: 100px; padding-bottom: 1em; }
+.nav-cell { width: 50px; padding-bottom: 1em; }
+.nav-cell-wide { width: 70px; }
+
+.duViewerLink { color: #B0461A; font-weight: bold; text-decoration: none; }
+.duViewerLink:hover { text-decoration: underline; }
+.disabled-link { color: #999; font-weight: normal; cursor: default; }
+
+/* jQuery UI Tabs */
+.ui-tabs { padding: 0; background: #f5f4ec; border: 1px solid #ccc; }
+.ui-tabs-nav { margin: 0; padding: 0.2em 0.2em 0; background: #e8e8e0; border-bottom: 1px solid #ccc; list-style: none; display: flex; }
+.ui-tabs-nav li { margin: 0 0.2em 0 0; padding: 0; border: 1px solid #ccc; border-bottom: none; background: #d0d0c8; cursor: pointer; }
+.ui-tabs-nav li.ui-tabs-active { background: #f5f4ec; border-bottom: 1px solid #f5f4ec; margin-bottom: -1px; }
+.ui-tabs-anchor { display: block; padding: 10px 20px; color: #333; text-decoration: none; font-family: 'CallunaSemibold', 'Times New Roman', serif; }
+.ui-tabs-panel { padding: 20px; background: #f5f4ec; }
+#tabs-2 { display: none; }
+
+/* Map Viewer */
+.viewer-container { text-align: center; }
+.map-viewer { max-height: 800px; overflow: auto; background: #e8e8e0; padding: 10px; }
+#map-image { max-width: 100%; height: auto; cursor: zoom-in; transition: transform 0.3s ease; }
+.metadata-table { border-collapse: collapse; margin: 0 auto; }
+
 /* Content 
 -------------------------------------------------------------------------------*/
 
@@ -502,7 +538,7 @@ h5 {
 }
 
 #content h2 span {
-	background: url(../img/backgrounds/header-flourish.png) no-repeat right center;
+	background: url(/img/backgrounds/header-flourish.png) no-repeat right center;
 	padding: 0 55px 0 0;
 }
 
@@ -599,12 +635,12 @@ img.alignleft {
 }
 
 #home-content h1 span {
-	background: url(../img/backgrounds/header-flourish.png) no-repeat right center;
+	background: url(/img/backgrounds/header-flourish.png) no-repeat right center;
 	padding: 0 55px 0 0;
 }
 
 .chapter-list h2 span {
-	background: url(../img/backgrounds/header-flourish.png) no-repeat right center;
+	background: url(/img/backgrounds/header-flourish.png) no-repeat right center;
 	padding: 0 55px 0 0;
 }
 
@@ -629,8 +665,8 @@ p#highlight {
 }
 
 .chapter {
-	 background: url(../img/backgrounds/chapter-top.png) top left repeat-x,
-    url(../img/backgrounds/chapter-bottom.png) bottom left repeat-x;
+	 background: url(/img/backgrounds/chapter-top.png) top left repeat-x,
+    url(/img/backgrounds/chapter-bottom.png) bottom left repeat-x;
 	background-color: #eeede3;
 	color: #6b6242;
 	padding: 22px 10px 22px 20px;
@@ -712,7 +748,7 @@ p#highlight {
 }
 
 #content #book-promo p a {
-	background: url(../img/backgrounds/content-buy-now-button.jpg);
+	background: url(/img/backgrounds/content-buy-now-button.jpg);
 	border-top: 1px solid #cfc6a4;
 	border-bottom: 1px solid #cfc6a4;
 	color: #fff;
@@ -742,7 +778,7 @@ p#highlight {
 } 
 
 #content.lrg-grid ol li{
-	background: url(../img/backgrounds/chapter-index-li.png) #eeede3 repeat-x;
+	background: url(/img/backgrounds/chapter-index-li.png) #eeede3 repeat-x;
 	float: left;
 	padding: 0;
 	width: 286px;
@@ -761,7 +797,7 @@ p#highlight {
 
 
 #content.lrg-grid ol li a {
-	background: url(../img/backgrounds/chapter-index-item.png) no-repeat center bottom;
+	background: url(/img/backgrounds/chapter-index-item.png) no-repeat center bottom;
 	color: #004146;
 	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
 	float: left;
@@ -807,6 +843,9 @@ p#highlight {
 	float: left;
 	margin: 0 20px 0 0;
 	padding: 4px;
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
 }
 
 #content.browse article h3 { /* default used in creator pages */
@@ -890,7 +929,7 @@ aside {
 #browse-chrono,
 #browse-creator,
 #browse-chapter {
-	background: url(../img/backgrounds/browse-chrono.jpg);
+	background: url(/img/backgrounds/browse-chrono.jpg);
 	float: left;
 	height: 51px;
 	margin: 0 0 12px 0;
@@ -899,8 +938,8 @@ aside {
 	width: 240px;
 }
 
-#browse-creator { background: url(../img/backgrounds/browse-creator.jpg);}
-#browse-chapter { background:url(../img/backgrounds/browse-chapter.jpg);}
+#browse-creator { background: url(/img/backgrounds/browse-creator.jpg);}
+#browse-chapter { background:url(/img/backgrounds/browse-chapter.jpg);}
 
 #browse-chrono:hover,
 #browse-creator:hover,
@@ -909,7 +948,7 @@ aside {
 }
 
 #sidebar div.hr {
-	background: url(../img/backgrounds/sidebar-flourish.png) no-repeat center top;
+	background: url(/img/backgrounds/sidebar-flourish.png) no-repeat center top;
 	float: left;
 	height: 40px;
 	margin: 10px 0 20px 0;
@@ -919,8 +958,8 @@ aside {
 #sidebar div.hr hr{display: none;}
 
 #sidebar #book-promo {
-	 background: url(../img/backgrounds/book-promo-top.png) top left repeat-x,
-    url(../img/backgrounds/book-promo-bottom.png) bottom left repeat-x;
+	 background: url(/img/backgrounds/book-promo-top.png) top left repeat-x,
+    url(/img/backgrounds/book-promo-bottom.png) bottom left repeat-x;
 	background-color: #eeede3;
 	color: #6b6242;
 	float: left;
@@ -954,7 +993,7 @@ aside {
 
 
 #sidebar a#buy-now {
-	background: url(../img/backgrounds/buy-now.jpg);
+	background: url(/img/backgrounds/buy-now.jpg);
 	color: #004146;
 	height: 59px;
 	float: left;
@@ -984,7 +1023,7 @@ aside {
 }
 
 #sidebar a#learn-more {
-	background: url(../img/backgrounds/sidebar-learn-more.png);
+	background: url(/img/backgrounds/sidebar-learn-more.png);
 	color: #a63613;
 	font-family: 'CallunaBold', 'Times New Roman', Times, serif;
 	float: left;
@@ -1013,29 +1052,35 @@ aside {
 }*/
 
 #hoa-site-link {
-	display: inline-block;
 	background: #962f11;
-	padding: 7px 10px;
-	float: right;
-	position: relative;
-	bottom: 30px;
-    
-	color: white;
-	font-family: 'CallunaSemibold', "Times New Roman", Times, serif;
-	font-size: 14px;
-	font-weight: bold;
-	text-decoration: none;
-  }
-  
-  #hoa-site-link:hover {
-	background: #7c240d;
-  }
+    padding: 7px 10px;
+    position: relative;
+    top: 2px;
+    float: right;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 20px;
+    /* margin-bottom: 84px; */
+    position: relative;
+    bottom: 30px;
+}
 
+#hoa-site-link a {
+	position: relative;
+    top: -1px;
+    color: #e9e8da;
+    font-family: 'CallunaSemibold', "Times New Roman", Times, serif;
+    font-size: 14px;
+    /*text-transform: uppercase;*/
+    text-decoration: none;
+}
 
 /* Footer new
 -------------------------------------------------------------------------------*/
 footer {
-	background: url(../img/backgrounds/footer.png) no-repeat;
+	background: url(/img/backgrounds/footer.png) no-repeat;
 	color: #6b6242;
 	font-family: 'CallunaBold', 'Times New Roman', Times, serif;
 	padding: 15px 20px 30px 60px;
@@ -1077,7 +1122,7 @@ footer p {
 footer p a {color: #6b6242;}
 
 footer p#du-penrose {
-	background: url(../img/backgrounds/du-ulibraries-logo.png) no-repeat;
+	background: url(/img/backgrounds/du-ulibraries-logo.png) no-repeat;
 	float: left;
 	height: 45px;
 	width: 100px;
@@ -1095,7 +1140,7 @@ footer p#du-penrose a {
 
 
 footer p#footer-credit {
-	background: url(../img/backgrounds/footer-credit.png) no-repeat;
+	background: url(/img/backgrounds/footer-credit.png) no-repeat;
 	float: right;
 	height: 33px;
 	width: 138px;
@@ -1110,5 +1155,390 @@ footer p#footer-credit a {
 	margin-right: 30px;
 }
 
+
+/* ==========================================================================
+   RESPONSIVE STYLES
+   ========================================================================== */
+
+/* Tablet - 1024px and below */
+@media screen and (max-width: 1080px) {
+	#wrapper {
+		width: 100%;
+		max-width: 1058px;
+	}
+	
+	header {
+		width: 100%;
+		max-width: 1020px;
+		background-size: cover;
+	}
+	
+	#secondary {
+		width: calc(100% - 80px);
+	}
+	
+	#content-container {
+		background-size: 100% auto;
+	}
+	
+	footer {
+		width: calc(100% - 80px);
+	}
+}
+
+/* Tablet Portrait - 768px and below */
+@media screen and (max-width: 768px) {
+	#wrapper {
+		width: 100%;
+		padding: 0 10px;
+		box-sizing: border-box;
+	}
+	
+	header {
+		height: auto;
+		min-height: 150px;
+		padding: 10px;
+		width: calc(100% - 20px);
+		background-size: cover;
+	}
+	
+	#logo {
+		width: 100%;
+		max-width: 300px;
+		height: 80px;
+		background-size: contain;
+		margin: 0 auto;
+		float: none;
+	}
+	
+	#logo a {
+		width: 100%;
+		height: 80px;
+	}
+	
+	#primary {
+		float: none;
+		width: 100%;
+	}
+	
+	#primary ol {
+		width: 100%;
+		height: auto;
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	
+	#primary ol li {
+		width: auto;
+		height: auto;
+		padding: 5px 10px;
+	}
+	
+	#primary ol li a {
+		width: auto;
+		height: auto;
+		padding: 10px;
+		float: none;
+	}
+	
+	#secondary {
+		position: relative;
+		top: auto;
+		width: calc(100% - 20px);
+		height: auto;
+		padding: 10px 20px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+	}
+	
+	#secondary p {
+		padding: 10px 0;
+	}
+	
+	#secondary ol {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+	}
+	
+	#secondary ol li {
+		height: auto;
+		margin: 0;
+	}
+	
+	#secondary ol li a {
+		width: auto;
+		height: auto;
+		padding: 10px 15px;
+	}
+	
+	#secondary form {
+		width: 100%;
+		max-width: 241px;
+	}
+	
+	#content-container {
+		padding: 0 10px 20px;
+	}
+	
+	#content {
+		float: none;
+		width: 100%;
+		padding: 0 10px;
+		box-sizing: border-box;
+	}
+	
+	#content.full-width {
+		width: 100%;
+	}
+	
+	aside, #sidebar {
+		float: none;
+		width: 100%;
+		padding: 20px 10px;
+		box-sizing: border-box;
+	}
+	
+	#home-content {
+		width: 100%;
+		float: none;
+	}
+	
+	#home-content h1,
+	#home-content p {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	
+	p#highlight {
+		width: calc(100% - 20px);
+		padding: 15px;
+		margin: 0 0 20px 0;
+		left: 0;
+	}
+	
+	.chapter {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 15px;
+		min-height: auto;
+	}
+	
+	.chapter a img {
+		float: none;
+		display: block;
+		margin: 0 auto 15px;
+	}
+	
+	/* Browse pages */
+	.browse article {
+		width: 100%;
+	}
+	
+	.browse article a img {
+		float: none;
+		display: block;
+		margin: 0 auto 15px;
+	}
+	
+	/* Map viewer */
+	.map-nav-table td {
+		padding: 5px !important;
+	}
+	
+	.nav-spacer, .nav-spacer-end {
+		display: none;
+	}
+	
+	.ui-tabs-nav {
+		flex-wrap: wrap;
+	}
+	
+	.map-viewer {
+		max-height: 500px;
+	}
+	
+	.metadata-table {
+		width: 100%;
+	}
+	
+	.heading {
+		width: 100px;
+		font-size: 12px;
+	}
+	
+	.mapData {
+		font-size: 12px;
+	}
+	
+	/* Footer */
+	footer {
+		width: calc(100% - 40px);
+		padding: 15px 20px;
+	}
+	
+	#footer-nav ol {
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	
+	#footer-nav ol li {
+		margin: 5px 10px;
+		padding: 0 10px;
+		height: auto;
+	}
+	
+	footer p {
+		width: 100%;
+		text-align: center;
+		margin: 10px 0;
+	}
+	
+	footer p#du-penrose,
+	footer p#footer-credit {
+		float: none;
+		margin: 10px auto;
+	}
+}
+
+/* Mobile - 480px and below */
+@media screen and (max-width: 480px) {
+	body {
+		font-size: 14px;
+	}
+	
+	header {
+		min-height: 100px;
+	}
+	
+	#logo {
+		max-width: 200px;
+		height: 60px;
+	}
+	
+	#primary ol li a {
+		font-size: 12px;
+		padding: 8px;
+	}
+	
+	#secondary {
+		padding: 10px;
+	}
+	
+	#secondary p {
+		font-size: 11px;
+		width: 100%;
+		text-align: center;
+	}
+	
+	#secondary ol {
+		width: 100%;
+		justify-content: center;
+	}
+	
+	#secondary ol li a {
+		font-size: 12px;
+		padding: 8px 10px;
+		width: auto;
+	}
+	
+	#secondary form {
+		width: 100%;
+		margin-top: 10px;
+	}
+	
+	#secondary form input#header-search {
+		width: calc(100% - 60px);
+	}
+	
+	h1 {
+		font-size: 24px;
+	}
+	
+	#content h2 {
+		font-size: 18px;
+	}
+	
+	#content h3 {
+		font-size: 16px;
+	}
+	
+	p#highlight {
+		font-size: 16px;
+		padding: 10px;
+	}
+	
+	.chapter h3, .chapter h3 a {
+		font-size: 15px;
+	}
+	
+	.chapter h3 a strong {
+		font-size: 22px;
+	}
+	
+	#sidebar #book-promo {
+		padding: 10px;
+	}
+	
+	#sidebar #book-promo div {
+		padding: 10px;
+	}
+	
+	#sidebar #book-promo img {
+		float: none;
+		display: block;
+		margin: 0 auto 10px;
+	}
+	
+	/* Map viewer mobile */
+	.duViewerLink {
+		font-size: 12px;
+	}
+	
+	.ui-tabs-anchor {
+		padding: 8px 12px;
+		font-size: 13px;
+	}
+	
+	.map-viewer {
+		max-height: 400px;
+		padding: 5px;
+	}
+	
+	.heading {
+		width: 80px;
+		padding: 8px;
+		font-size: 11px;
+	}
+	
+	.mapData {
+		padding: 8px;
+		font-size: 11px;
+	}
+	
+	#hoa-site-link {
+		display: none;
+	}
+}
+
+/* Dropdown fix for touch devices */
+@media (hover: none) {
+	#secondary ol ol {
+		position: relative;
+		top: auto;
+		left: auto;
+		visibility: visible;
+		box-shadow: none;
+		background: transparent;
+		width: 100%;
+	}
+	
+	#secondary ol ol li a {
+		background: rgba(0,0,0,0.2) !important;
+	}
+}
 
 

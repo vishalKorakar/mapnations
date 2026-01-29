@@ -597,6 +597,7 @@ export interface ApiMapMap extends Struct.CollectionTypeSchema {
     mapTitle: Schema.Attribute.String;
     mapYear: Schema.Attribute.String;
     Notes: Schema.Attribute.String;
+    order: Schema.Attribute.String;
     PhysicalNote: Schema.Attribute.String;
     Places: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
@@ -631,6 +632,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::page.page'> &
       Schema.Attribute.Private;
+    order: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     Sections: Schema.Attribute.DynamicZone<
       ['sections.information', 'sections.featured-chapters', 'shared.link']

@@ -1,0 +1,84 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
+import { fetchMaps, STRAPI_URL } from '../lib/strapi';
+
+// Fetch all maps at build time
+const allMaps = await fetchMaps();
+---
+
+<Layout>
+  <div id="wrapper">
+    <Header />
+    <div id="content-container" class="clearfix">
+      <section id="content" class="browse">
+        <h1><span>Search Results</span></h1>
+        
+        <p id="search-status">Loading...</p>
+        
+        <div id="results-container"></div>
+      </section>
+    </div>
+    <Footer />
+  </div>
+</Layout>
+
+<script define:vars={{ allMaps, STRAPI_URL }}>
+  // Get search query from URL
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get('searchText') || '';
+  
+  const statusEl = document.getElementById('search-status');
+  const resultsEl = document.getElementById('results-container');
+  
+  if (!query) {
+    statusEl.textContent = 'Enter a search term to find maps.';
+  } else {
+    // Search function
+    const searchTerm = query.toLowerCase().trim();
+    
+    const results = allMaps.filter((map) => {
+      const fields = [
+        map.mapTitle,
+        map.Description,
+        map.creatorName,
+        map.Topics,
+        map.Places,
+        map.mapYear,
+        map.AlternateTitle,
+        map.Notes,
+      ];
+      
+      return fields.some((field) => 
+        field && String(field).toLowerCase().includes(searchTerm)
+      );
+    });
+    
+    // Update status
+    statusEl.innerHTML = `Found <strong>${results.length}</strong> result${results.length !== 1 ? 's' : ''} for "<strong>${query}</strong>"`;
+    
+    // Render results
+    if (results.length > 0) {
+      resultsEl.innerHTML = results.map((map) => {
+        const img = map.image;
+        const file = img?.formats?.thumbnail || img;
+        const imgUrl = file?.url ? `${STRAPI_URL}${file.url}` : null;
+        
+        return `
+          <article>
+            ${imgUrl ? `<a href="/maps/${map.slug}"><img src="${imgUrl}" alt="${map.mapTitle}" loading="lazy" /></a>` : ''}
+            <h3><a href="/maps/${map.slug}">${map.mapTitle}</a></h3>
+            <p>${map.Description || ''}</p>
+            <p class="map-meta">
+              ${map.creatorName ? `<span>${map.creatorName}</span>` : ''}
+              ${map.mapYear ? `<span> • ${map.mapYear}</span>` : ''}
+            </p>
+          </article>
+        `;
+      }).join('');
+    } else {
+      resultsEl.innerHTML = '<p>No maps found matching your search. Try different keywords.</p>';
+    }
+  }
+</script>

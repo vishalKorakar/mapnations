@@ -22,7 +22,7 @@ export async function fetchGlobal() {
 }
 
 export async function fetchPages() {
-  const json = await strapiFetch(`/api/pages`);
+  const json = await strapiFetch(`/api/pages?sort[0]=id:asc`);
   return json.data ?? [];
 }
 
@@ -46,4 +46,79 @@ export async function fetchChapterBySlug(slug) {
   );
 
   return json.data?.[0] ?? null;
+}
+
+// Fetch ALL maps with image populated (handles multiple pages)
+// Sorted by chapter order first, then map order within chapter (via API)
+export async function fetchMaps() {
+  let allMaps = [];
+  let page = 1;
+  let hasMore = true;
+  
+  while (hasMore) {
+    const json = await strapiFetch(
+      `/api/maps?populate=*&sort[0]=chapter.order:asc&sort[1]=order:asc&pagination[page]=${page}&pagination[pageSize]=100`
+    );
+    const maps = json.data ?? [];
+    allMaps = allMaps.concat(maps);
+    
+    const pagination = json.meta?.pagination;
+    if (!pagination || page >= pagination.pageCount) {
+      hasMore = false;
+    } else {
+      page++;
+    }
+  }
+  
+  return allMaps;
+}
+
+// Helper to extract year from mapYear field like "(1828)"
+export function parseMapYear(mapYear) {
+  if (!mapYear) return null;
+  const match = String(mapYear).match(/\d{4}/);
+  return match ? parseInt(match[0], 10) : null;
+}
+
+// Filter maps by year range
+export async function fetchMapsByPeriod(startYear, endYear) {
+  const allMaps = await fetchMaps();
+  return allMaps.filter((map) => {
+    const year = parseMapYear(map.mapYear);
+    if (!year) return false;
+    return year >= startYear && year <= endYear;
+  });
+}
+
+// Fetch single map by slug
+export async function fetchMapBySlug(slug) {
+  const json = await strapiFetch(
+    `/api/maps?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`
+  );
+  return json.data?.[0] ?? null;
+}
+
+// Search maps by query (searches title, description, creator, topics, places)
+export async function searchMaps(query) {
+  if (!query || query.trim() === '') return [];
+  
+  const allMaps = await fetchMaps();
+  const searchTerm = query.toLowerCase().trim();
+  
+  return allMaps.filter((map) => {
+    const fields = [
+      map.mapTitle,
+      map.Description,
+      map.creatorName,
+      map.Topics,
+      map.Places,
+      map.mapYear,
+      map.AlternateTitle,
+      map.Notes,
+    ];
+    
+    return fields.some((field) => 
+      field && String(field).toLowerCase().includes(searchTerm)
+    );
+  });
 }

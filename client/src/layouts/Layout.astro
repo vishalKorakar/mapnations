@@ -1,5 +1,5 @@
 ---
-// import "../styles/global.css";
+import "../styles/main.css";
 import { fetchGlobal } from "../lib/strapi.js";
 import Header from "../components/header.astro";
 import Footer from "../components/footer.astro";
@@ -11,14 +11,12 @@ const global = await fetchGlobal();
 
 <!doctype html>
 <html lang="en">
+	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
-		<!-- <meta name="generator" content={Astro.generator} /> -->
-		<meta name="title" content="Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten">
-		<meta name="description" content="Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten">
-		<!-- <meta name="google-site-verification" content=""> -->
-		<link rel="stylesheet" href="http://www.mappingthenation.com/css/main.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="title" content="Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten" />
+		<meta name="description" content="Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten" />
+		<link rel="stylesheet" href="/src/styles/main.css" />
 		<title>Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten</title>
 	</head>
 	<body>

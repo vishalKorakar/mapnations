@@ -28,6 +28,9 @@
         "sections.featured-chapters",
         "shared.link"
       ]
+    },
+    "order": {
+      "type": "string"
     }
   }
 }
