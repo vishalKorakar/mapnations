@@ -1,0 +1,163 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
+import { fetchArticles, STRAPI_URL } from '../lib/strapi';
+
+// Fetch all articles
+const articles = await fetchArticles();
+
+// Extract unique categories from all articles
+const allCategories = new Map();
+articles.forEach((article: any) => {
+  (article.categories || []).forEach((cat: any) => {
+    if (cat.name && !allCategories.has(cat.name)) {
+      allCategories.set(cat.name, cat.name);
+    }
+  });
+});
+const categories = Array.from(allCategories.values()).sort();
+
+// Extract unique archives (year/month) from articles
+const archives = new Map();
+articles.forEach((article: any) => {
+  if (article.articleDate) {
+    const date = new Date(article.articleDate);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    if (!archives.has(key)) {
+      archives.set(key, { key, label });
+    }
+  }
+});
+const archiveList = Array.from(archives.values()).sort((a, b) => b.key.localeCompare(a.key));
+
+// Helper to get image URL - checks for image field or extracts from Contents blocks
+const getImageUrl = (article: any) => {
+  // First check for direct image field
+  const img = article.image || article.featuredImage;
+  if (img) {
+    const file = img.formats?.thumbnail ?? img;
+    return file?.url ? `${STRAPI_URL}${file.url}` : null;
+  }
+  
+  // Fallback: extract first image from Contents blocks
+  const contents = article.Contents || [];
+  const imageBlock = contents.find((b: any) => b.type === 'image');
+  if (imageBlock?.image?.url) {
+    return `${STRAPI_URL}${imageBlock.image.url}`;
+  }
+  
+  return null;
+};
+
+// Helper to get excerpt
+const getExcerpt = (article: any) => {
+  const content = article.Contents || [];
+  const firstPara = content.find((b: any) => b.type === 'paragraph');
+  if (!firstPara) return '';
+  const text = (firstPara.children || []).map((c: any) => c.text || '').join('');
+  return text.length > 200 ? text.substring(0, 200) + '...' : text;
+};
+---
+
+<Layout>
+  <div id="wrapper">
+    <Header />
+    <div id="content-container" class="clearfix">
+      
+      <aside id="sidebar">
+        
+        <div class="hr"><hr /></div>
+        
+        <div class="sidebar-content">
+          <div>
+            <h3>Categories</h3>
+            <ul>
+              {categories.map((cat) => (
+                <li class="cat-item">
+                  <a href={`/blog?category=${encodeURIComponent(cat)}`}>{cat}</a>
+                </li>
+              ))}
+            </ul>
+            
+            <h3>Archives</h3>
+            <ul>
+              {archiveList.map((archive) => (
+                <li>
+                  <a href={`/blog?archive=${archive.key}`}>{archive.label}</a>
+                </li>
+              ))}
+            </ul>
+            
+            <h3>Links</h3>
+            <ul>
+              <li><a href="http://www.bostonraremaps.com/default.htm">Boston Rare Maps</a></li>
+              <li><a href="http://antiqueprintsblog.blogspot.com/">Chris Lane's antique prints blog</a></li>
+              <li><a href="http://www.davidrumsey.com" title="Enormous collection of maps.">David Rumsey Map Collection</a></li>
+              <li><a href="http://bigthink.com/blogs/strange-maps/">Frank Jacobs Strange Maps</a></li>
+              <li><a href="http://makingmaps.net/">Johy Krygier's Making Maps</a></li>
+              <li><a href="http://maps.bpl.org/" title="Historic maps at the BPL">Maps at the Boston Public Library</a></li>
+            </ul>
+            
+            <h3>Subscribe</h3>
+            <ul>
+              <li><a href="/blog/feed">Entries (RSS)</a></li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+      
+      <section id="content" class="browse">
+        <h1><span>Blog</span></h1>
+        <p>Here we can continue to explore the relationship between maps and history. I welcome your comments, and your maps!</p>
+        
+        {articles.length > 0 ? (
+          articles.map((article: any) => {
+            const imgUrl = getImageUrl(article);
+            const excerpt = getExcerpt(article);
+            
+            return (
+              <article>
+                {imgUrl && (
+                  <a href={`/blog/${article.slug}`}>
+                    <img src={imgUrl} alt={article.title} />
+                  </a>
+                )}
+                
+                <h3>
+                  <a href={`/blog/${article.slug}`}>{article.title}</a>
+                </h3>
+                
+                {excerpt && <p>{excerpt}</p>}
+                
+                <p class="map-meta">
+                  {article.articleDate && (
+                    <span>({article.articleDate})</span>
+                  )}
+                  {article.categories && article.categories.length > 0 && (
+                    <span>
+                      {' | '}
+                      {article.categories.map((cat: any, i: number) => (
+                        <span>
+                          <a href={`/blog?category=${encodeURIComponent(cat.name)}`}>{cat.name}</a>
+                          {i < article.categories.length - 1 && ', '}
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                  {' | '}
+                  <a href={`/blog/${article.slug}`}>Read the Post »</a>
+                </p>
+              </article>
+            );
+          })
+        ) : (
+          <p>No blog posts found.</p>
+        )}
+      </section>
+      
+    </div>
+    <Footer />
+  </div>
+</Layout>

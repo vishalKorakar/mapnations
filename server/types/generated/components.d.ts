@@ -1,5 +1,15 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface LayoutCategories extends Struct.ComponentSchema {
+  collectionName: 'components_layout_categories';
+  info: {
+    displayName: 'categories';
+  };
+  attributes: {
+    categoryTitle: Schema.Attribute.String;
+  };
+}
+
 export interface LayoutFooter extends Struct.ComponentSchema {
   collectionName: 'components_layout_footers';
   info: {
@@ -102,6 +112,7 @@ export interface SharedUniversityLogoLink extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'layout.categories': LayoutCategories;
       'layout.footer': LayoutFooter;
       'layout.header': LayoutHeader;
       'layout.heading': LayoutHeading;

@@ -122,3 +122,19 @@ export async function searchMaps(query) {
     );
   });
 }
+
+// Fetch all blog articles
+export async function fetchArticles() {
+  const json = await strapiFetch(
+    `/api/articles?sort[0]=createdAt:desc&populate=*`
+  );
+  return json.data ?? [];
+}
+
+// Fetch single article by slug
+export async function fetchArticleBySlug(slug) {
+  const json = await strapiFetch(
+    `/api/articles?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`
+  );
+  return json.data?.[0] ?? null;
+}

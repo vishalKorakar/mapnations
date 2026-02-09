@@ -123,16 +123,24 @@ const metadata = [
       <!-- Viewer Tab -->
       <div id="tabs-1" aria-labelledby="ui-id-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="true" aria-hidden="false">
         <div id="iframe" class="viewer-container">
-          <div id="load-msg" class="load-msg" style="visibility: hidden;">Loading map...</div>
           
           {fullImageUrl ? (
-            <div class="map-viewer">
-              <img 
-                id="map-image" 
-                src={fullImageUrl} 
-                alt={map.mapTitle}
-              />
+            <div class="zoom-container">
+              <!-- Main image with lens -->
+              <div class="img-zoom-container" id="img-zoom-container">
+                <img 
+                  id="map-image" 
+                  src={fullImageUrl} 
+                  alt={map.mapTitle}
+                />
+                <div id="zoom-lens" class="img-zoom-lens"></div>
+              </div>
+              
+              <!-- Zoomed result panel -->
+              <div id="zoom-result" class="img-zoom-result"></div>
             </div>
+            
+            <p class="zoom-hint">Hover over image to zoom • Click to open full size</p>
           ) : (
             <p>No image available for this map.</p>
           )}
@@ -220,20 +228,168 @@ const metadata = [
       });
     });
 
-    // Simple zoom on image click
-    const mapImage = document.getElementById('map-image') as HTMLImageElement | null;
-    if (mapImage) {
-      let zoomed = false;
-      mapImage.addEventListener('click', () => {
-        if (zoomed) {
-          mapImage.style.transform = 'scale(1)';
-          mapImage.style.cursor = 'zoom-in';
-        } else {
-          mapImage.style.transform = 'scale(2)';
-          mapImage.style.cursor = 'zoom-out';
+    // Amazon-style image zoom
+    const imgEl = document.getElementById('map-image') as HTMLImageElement | null;
+    const lensEl = document.getElementById('zoom-lens') as HTMLElement | null;
+    const resultEl = document.getElementById('zoom-result') as HTMLElement | null;
+    const containerEl = document.getElementById('img-zoom-container') as HTMLElement | null;
+    
+    if (imgEl && lensEl && resultEl && containerEl) {
+      // Store references to avoid null checks in nested functions
+      const img = imgEl;
+      const lens = lensEl;
+      const result = resultEl;
+      const container = containerEl;
+      
+      // Zoom ratio (how much to magnify)
+      const zoomRatio = 2.5;
+      
+      // Wait for image to load to get dimensions
+      function initZoom() {
+        // Set lens size (smaller = more precise)
+        const lensWidth = 150;
+        const lensHeight = 150;
+        lens.style.width = lensWidth + 'px';
+        lens.style.height = lensHeight + 'px';
+        
+        // Set result size
+        result.style.width = (lensWidth * zoomRatio) + 'px';
+        result.style.height = (lensHeight * zoomRatio) + 'px';
+        
+        // Set background image for result
+        result.style.backgroundImage = `url('${img.src}')`;
+        result.style.backgroundSize = `${img.width * zoomRatio}px ${img.height * zoomRatio}px`;
+      }
+      
+      img.onload = initZoom;
+      if (img.complete) initZoom();
+      
+      // Mouse move handler
+      function moveLens(e: MouseEvent) {
+        e.preventDefault();
+        
+        const rect = img.getBoundingClientRect();
+        
+        // Get cursor position relative to image
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        
+        // Calculate lens position (center on cursor)
+        const lensW = lens.offsetWidth;
+        const lensH = lens.offsetHeight;
+        let lensX = x - lensW / 2;
+        let lensY = y - lensH / 2;
+        
+        // Prevent lens from going outside image
+        if (lensX < 0) lensX = 0;
+        if (lensY < 0) lensY = 0;
+        if (lensX > img.width - lensW) lensX = img.width - lensW;
+        if (lensY > img.height - lensH) lensY = img.height - lensH;
+        
+        // Position the lens
+        lens.style.left = lensX + 'px';
+        lens.style.top = lensY + 'px';
+        
+        // Calculate and set background position for result
+        const bgX = lensX * zoomRatio;
+        const bgY = lensY * zoomRatio;
+        result.style.backgroundPosition = `-${bgX}px -${bgY}px`;
+        
+        // Position floating result panel near cursor
+        const resultW = result.offsetWidth;
+        const resultH = result.offsetHeight;
+        const padding = 20; // Gap between cursor and panel
+        
+        // Try to position to the right of cursor
+        let resultX = e.clientX + padding;
+        let resultY = e.clientY - resultH / 2;
+        
+        // If it goes off the right edge, position to the left
+        if (resultX + resultW > window.innerWidth - 10) {
+          resultX = e.clientX - resultW - padding;
         }
-        zoomed = !zoomed;
+        
+        // Keep within vertical bounds
+        if (resultY < 10) resultY = 10;
+        if (resultY + resultH > window.innerHeight - 10) {
+          resultY = window.innerHeight - resultH - 10;
+        }
+        
+        result.style.left = resultX + 'px';
+        result.style.top = resultY + 'px';
+      }
+      
+      // Show/hide zoom on hover
+      container.addEventListener('mouseenter', () => {
+        lens.style.display = 'block';
+        result.style.display = 'block';
       });
+      
+      container.addEventListener('mouseleave', () => {
+        lens.style.display = 'none';
+        result.style.display = 'none';
+      });
+      
+      container.addEventListener('mousemove', moveLens);
+      lens.addEventListener('mousemove', moveLens);
+      
+      // Click to open full size in new tab
+      img.addEventListener('click', () => {
+        window.open(img.src, '_blank');
+      });
+      
+      img.style.cursor = 'crosshair';
     }
   });
 </script>
+
+<style>
+  .zoom-container {
+    display: block;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .img-zoom-container {
+    position: relative;
+    display: inline-block;
+    max-width: 600px;
+  }
+  
+  .img-zoom-container img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+  }
+  
+  .img-zoom-lens {
+    position: absolute;
+    border: 2px solid #8b4513;
+    background-color: rgba(139, 69, 19, 0.15);
+    display: none;
+    pointer-events: none;
+    z-index: 10;
+    border-radius: 4px;
+  }
+  
+  .img-zoom-result {
+    position: fixed;
+    border: 3px solid #8b4513;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    border-radius: 8px;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  
+  .zoom-hint {
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+    margin-top: 10px;
+    font-style: italic;
+  }
+</style>
