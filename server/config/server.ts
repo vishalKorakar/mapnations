@@ -3,5 +3,6 @@ export default ({ env }) => ({
   port: env.int('PORT', 1337),
   app: {
     keys: env.array('APP_KEYS'),
+    token: { salt: env('TRANSFER_TOKEN_SALT'), }, remote: { enabled: true}, // Enable data transfer 
   },
 });
