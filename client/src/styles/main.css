@@ -1157,6 +1157,296 @@ footer p#footer-credit a {
 
 
 /* ==========================================================================
-   Desktop layout is preserved on all devices via fixed viewport (width=1100)
-   The browser automatically scales the page to fit smaller screens
+   Responsive Styles
    ========================================================================== */
+
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+  display: none;
+  background: #004146;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  font-size: 24px;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.mobile-menu-toggle:hover {
+  background: #005a60;
+}
+
+/* Tablet Styles (max-width: 1100px) */
+@media screen and (max-width: 1100px) {
+  #wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  header {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 180px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-size: cover;
+  }
+  
+  .header-inner {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  #logo {
+    width: 300px;
+    height: auto;
+    background-size: contain;
+  }
+  
+  #logo img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+  }
+  
+  #primary ol {
+    width: auto;
+  }
+  
+  #primary ol li {
+    width: auto;
+    height: auto;
+  }
+  
+  #primary ol li a {
+    width: auto;
+    height: auto;
+    padding: 15px 10px;
+    font-size: 12px;
+  }
+  
+  #secondary {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    top: 0;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  
+  #content-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 15px 40px 15px;
+    box-sizing: border-box;
+    background-size: cover;
+  }
+  
+  #content {
+    width: 100%;
+    max-width: 100%;
+    float: none;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  #content.full-width {
+    width: 100%;
+  }
+  
+  aside {
+    width: 100%;
+    float: none;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  footer {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  footer p {
+    float: none;
+    text-align: center;
+    width: 100%;
+  }
+  
+  footer p#du-penrose,
+  footer p#footer-credit {
+    float: none;
+    margin: 10px auto;
+  }
+}
+
+/* Mobile Styles (max-width: 768px) */
+@media screen and (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  header {
+    min-height: 120px;
+    padding: 10px;
+  }
+  
+  #logo {
+    width: 200px;
+    margin: 5px 0;
+  }
+  
+  #logo img {
+    max-width: 200px;
+  }
+  
+  #primary {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #f5f3eb;
+    z-index: 999;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  }
+  
+  #primary.mobile-open {
+    display: block;
+  }
+  
+  #primary ol {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #primary ol li {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  #primary ol li a {
+    width: 100%;
+    height: auto;
+    padding: 15px 20px;
+    text-align: left;
+    box-sizing: border-box;
+    display: block;
+  }
+  
+  #secondary {
+    display: none;
+  }
+  
+  #hoa-site-link {
+    display: none;
+  }
+  
+  #content {
+    padding: 15px;
+  }
+  
+  h1, h1 span {
+    font-size: 24px !important;
+  }
+  
+  h2, h2 span {
+    font-size: 20px !important;
+  }
+  
+  #book-promo {
+    float: none !important;
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  #book-promo img {
+    max-width: 200px;
+    height: auto;
+  }
+  
+  .alignleft,
+  .alignright {
+    float: none !important;
+    display: block;
+    margin: 15px auto;
+  }
+  
+  blockquote {
+    margin: 15px 10px !important;
+    padding: 10px !important;
+  }
+  
+  /* Map grid responsive */
+  .map-grid,
+  .maps-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  /* Chapter cards */
+  .chapter-card,
+  article {
+    width: 100% !important;
+    margin: 10px 0 !important;
+  }
+  
+  /* Footer mobile */
+  footer {
+    height: auto !important;
+    padding: 20px 10px !important;
+  }
+  
+  footer p#du-penrose,
+  footer p#footer-credit {
+    display: block;
+    margin: 15px auto;
+    float: none;
+  }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media screen and (max-width: 480px) {
+  #logo {
+    width: 150px;
+  }
+  
+  #logo img {
+    max-width: 150px;
+  }
+  
+  .mobile-menu-toggle {
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    font-size: 20px;
+  }
+  
+  h1, h1 span {
+    font-size: 20px !important;
+  }
+  
+  h2, h2 span {
+    font-size: 18px !important;
+  }
+  
+  #content {
+    padding: 10px;
+  }
+  
+  p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
