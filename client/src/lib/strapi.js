@@ -1,4 +1,4 @@
-export const STRAPI_URL = import.meta.env.PUBLIC_STRAPI_URL || "http://localhost:1337";
+export const STRAPI_URL = import.meta.env.PUBLIC_STRAPI_URL || "https://useful-bird-4f65a1d6ee.strapiapp.com";
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || "";
 
 async function strapiFetch(path) {
