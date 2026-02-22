@@ -7,9 +7,11 @@ import Footer from '../../components/footer.astro';
 // Get all maps for static paths
 export async function getStaticPaths() {
   const maps = await fetchMaps();
-  return maps.map((map: any) => ({
-    params: { slug: map.slug },
-  }));
+  return maps
+    .filter((map: any) => map.slug != null && map.slug !== '')
+    .map((map: any) => ({
+      params: { slug: String(map.slug) },
+    }));
 }
 
 const { slug } = Astro.params;

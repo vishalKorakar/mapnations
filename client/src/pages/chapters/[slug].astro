@@ -8,11 +8,12 @@ import Header from '../../components/header.astro';
 // ✅ REQUIRED for dynamic routes in Astro SSG
 export async function getStaticPaths() {
   const chapters = await fetchChapters();
-  console.log(chapters);
 
-  return (chapters ?? []).map((c: any) => ({
-    params: { slug: c.slug },
-  }));
+  return (chapters ?? [])
+    .filter((c: any) => c.slug != null && c.slug !== '')
+    .map((c: any) => ({
+      params: { slug: String(c.slug) },
+    }));
 }
 
 // ✅ get slug from URL
