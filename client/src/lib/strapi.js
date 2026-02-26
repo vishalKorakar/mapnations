@@ -2,21 +2,15 @@ export const STRAPI_URL = import.meta.env.STRAPI_URL || "https://useful-bird-4f6
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || "";
 
 async function strapiFetch(path) {
-  const fullUrl = `${STRAPI_URL}${path}`;
-  console.log("[Strapi] Fetching:", fullUrl);
-  
-  const res = await fetch(fullUrl, {
+  const res = await fetch(`${STRAPI_URL}${path}`, {
     headers: STRAPI_TOKEN
       ? { Authorization: `Bearer ${STRAPI_TOKEN}` }
       : {},
   });
 
-  console.log("[Strapi] Response status:", res.status);
-
   if (!res.ok) {
     const text = await res.text();
-    console.error("[Strapi] Error response:", text);
-    throw new Error(`Strapi error ${res.status} for ${fullUrl}: ${text}`);
+    throw new Error(`Strapi error ${res.status}: ${text}`);
   }
 
   return res.json();

@@ -19,7 +19,7 @@ const viewerUrl = map?.viewerUrl || (slug ? `/maps/${slug}` : "#");
 
 <article>
   <a href={viewerUrl}>
-    {img && <img alt="Map TN" src={`${img}`} />}
+    {img && <img alt="Map TN" src={`${STRAPI_URL}${img}`} />}
   </a>
 
   <h3>

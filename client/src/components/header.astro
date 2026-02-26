@@ -17,8 +17,10 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 <header>
   <div class="header-inner">
     <a id="logo" href="/">
-      <img src={logoUrl} alt="Mapping the Nation" width="400" height="90" loading="lazy" decoding="async" />
+      <img src={logoUrl} alt="Mapping the Nation" loading="lazy" decoding="async" />
     </a>
+
+    <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="Toggle menu">&#9776;</button>
 
     <nav id="primary">
       <ol>
@@ -41,3 +43,16 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   </div>
   </div>
 </header>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const primaryNav = document.getElementById('primary');
+  
+  if (menuBtn && primaryNav) {
+    menuBtn.addEventListener('click', () => {
+      primaryNav.classList.toggle('mobile-open');
+      const isOpen = primaryNav.classList.contains('mobile-open');
+      menuBtn.innerHTML = isOpen ? '&#10005;' : '&#9776;';
+    });
+  }
+</script>

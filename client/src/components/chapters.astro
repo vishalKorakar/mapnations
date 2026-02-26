@@ -29,7 +29,7 @@ const chapterItems = (chapters ?? []).map((c: any) => {
   {chapterItems.map((c: any) => (
     <article class="chapter">
       <a href={`/chapters/${c.slug}`}>
-        {c.imageUrl && <img src={c.imageUrl} alt={`${c.title} image`} />}
+        {c.imageUrl && <img src={`${STRAPI_URL}${c.imageUrl}`} alt={`${c.title} image`} />}
       </a>
 
       <h3>
