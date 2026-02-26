@@ -287,7 +287,7 @@ header {
 #primary ol li.selected a,
 #primary ol li.selected a:hover {
 	color: #fff;
-	cursor: default;
+	/* cursor: default; */
 	background: url(/img/backgrounds/selected.png) no-repeat center top;
 	font-weight: normal;
 	text-decoration: none;
@@ -1205,14 +1205,14 @@ footer p#footer-credit a {
   }
   
   #logo {
-    width: 300px;
-    height: auto;
+    width: 600px;
+    height: 50px;
     background-size: contain;
   }
-  
+
   #logo img {
     width: 100%;
-    max-width: 300px;
+    max-width: 400px;
     height: auto;
   }
   
@@ -1314,12 +1314,12 @@ footer p#footer-credit a {
   }
   
   #logo {
-    width: 200px;
+    width: 280px;
     margin: 5px 0;
   }
-  
+
   #logo img {
-    max-width: 200px;
+    max-width: 280px;
   }
   
   #primary {
@@ -1357,6 +1357,15 @@ footer p#footer-credit a {
     text-align: left;
     box-sizing: border-box;
     display: block;
+  }
+
+  #primary ol li.selected a,
+  #primary ol li.selected a:hover {
+      color: #AE493E;
+      background: none;
+      border-left: 4px solid #AE493E;
+      padding-left: 16px;
+      /* font-weight: normal; */
   }
   
   #secondary {
@@ -1453,11 +1462,11 @@ footer p#footer-credit a {
 /* Small Mobile (max-width: 480px) */
 @media screen and (max-width: 480px) {
   #logo {
-    width: 150px;
+    width: 220px;
   }
-  
+
   #logo img {
-    max-width: 150px;
+    max-width: 220px;
   }
   
   .mobile-menu-toggle {
