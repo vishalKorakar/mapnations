@@ -1193,7 +1193,7 @@ footer p#footer-credit a {
     width: 100%;
     max-width: 100%;
     height: auto;
-    min-height: 180px;
+    min-height: 210px;
     padding: 10px;
     box-sizing: border-box;
     background-size: cover;
@@ -1233,12 +1233,69 @@ footer p#footer-credit a {
   }
   
   #secondary {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
-    max-width: 100%;
-    position: relative;
-    top: 0;
-    padding: 0 10px;
+    height: auto;
+    min-height: 58px;
+    padding: 8px 20px;
     box-sizing: border-box;
+    background-color: #003f46;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #secondary p {
+    float: none;
+    padding: 8px 15px 8px 0;
+  }
+
+  #secondary ol {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    gap: 2px;
+  }
+
+  #secondary ol li {
+    float: none;
+    height: auto;
+    margin: 0;
+  }
+
+  #secondary ol li a {
+    float: none;
+    height: auto;
+    padding: 10px 15px;
+    width: auto;
+  }
+
+  #secondary form {
+    float: none;
+    width: auto;
+    padding: 0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  #secondary form input#header-search {
+    position: relative;
+    z-index: 1;
+    width: 140px;
+    float: none;
+  }
+
+  #secondary form input#header-search-submit {
+    position: relative;
+    left: auto;
+    z-index: 1;
+    float: none;
   }
   
   #content-container {
@@ -1311,6 +1368,8 @@ footer p#footer-credit a {
   header {
     min-height: 120px;
     padding: 10px;
+    background-size: auto;
+    background-position: top center;
   }
   
   #logo {
