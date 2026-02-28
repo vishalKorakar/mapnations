@@ -1181,6 +1181,11 @@ footer p#footer-credit a {
   background: #005a60;
 }
 
+/* Browse Images toggle — mobile only, hidden on desktop/tablet */
+.browse-toggle {
+  display: none;
+}
+
 /* Tablet Styles (max-width: 1100px) */
 @media screen and (max-width: 1100px) {
   #wrapper {
@@ -1427,10 +1432,147 @@ footer p#footer-credit a {
       /* font-weight: normal; */
   }
   
+  /* Secondary nav: show as collapsible bar on mobile.
+     JS moves this element to just before #content-container. */
   #secondary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    min-height: 44px;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #003f46;
+  }
+
+  .browse-toggle {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    font-family: 'CallunaRegular', "Times New Roman", Times, serif;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.09em;
+    text-shadow: 1px 1px #002529;
+    text-align: left;
+    gap: 8px;
+  }
+
+  .browse-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Hide desktop "BROWSE IMAGES" label */
+  #secondary > p {
     display: none;
   }
-  
+
+  /* Hide nav list and search by default; show search always */
+  #secondary > ol {
+    display: none;
+    width: 100%;
+    padding: 0;
+  }
+
+  #secondary > form {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    float: none;
+    width: auto;
+    margin-left: 0;
+  }
+
+  #secondary > form input#header-search {
+    position: relative;
+    left: auto;
+    z-index: 1;
+    width: 110px;
+    height: 28px;
+    line-height: 28px;
+  }
+
+  #secondary > form input#header-search-submit {
+    position: relative;
+    left: auto;
+    z-index: 1;
+  }
+
+  /* Expanded state */
+  #secondary.browse-open > ol {
+    display: block;
+    background: #004a52;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  #secondary.browse-open ol > li {
+    float: none;
+    width: 100%;
+    height: auto;
+    background: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
+  }
+
+  #secondary.browse-open ol > li > a {
+    display: block;
+    float: none;
+    width: 100%;
+    height: auto;
+    padding: 12px 20px;
+    box-sizing: border-box;
+  }
+
+  #secondary.browse-open ol > li > a:hover,
+  #secondary.browse-open ol > li.hover > a {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Sub-menus expanded inline — no hover required */
+  #secondary.browse-open ol ol {
+    display: block;
+    visibility: visible;
+    position: static;
+    width: 100%;
+    background: #003840;
+    box-shadow: none;
+    top: auto;
+    left: auto;
+  }
+
+  #secondary.browse-open ol ol li {
+    float: none;
+    width: 100%;
+    height: auto;
+    background: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #secondary.browse-open ol ol li a {
+    display: block !important;
+    background: none !important;
+    float: none;
+    padding: 9px 20px 9px 36px !important;
+    width: auto;
+    height: auto;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  #secondary.browse-open ol ol li a:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
   #hoa-site-link {
     display: none;
   }

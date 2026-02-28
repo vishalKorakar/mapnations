@@ -58,6 +58,9 @@ const chapters = await fetchChapters();
 
 
 <nav id="secondary">
+  <button class="browse-toggle" id="browse-toggle" aria-expanded="false">
+    &#9776; BROWSE IMAGES
+  </button>
   <p>BROWSE IMAGES</p>
   <ol>
     <li><a>By Chapter</a>
@@ -82,18 +85,57 @@ const chapters = await fetchChapters();
   </ol>
 
   <form action="/search" method="get">
-     <input 
-       type="text" 
-       name="searchText" 
-       id="header-search" 
+     <input
+       type="text"
+       name="searchText"
+       id="header-search"
        placeholder="Search this Site"
      />
-     <input 
-       type="image" 
-       src="/img/backgrounds/header-search-submit.png" 
-       alt="GO" 
+     <input
+       type="image"
+       src="/img/backgrounds/header-search-submit.png"
+       alt="GO"
        id="header-search-submit"
      />
   </form>
-  
 </nav>
+
+<script>
+  // Browse nav toggle
+  const browseBtn = document.getElementById('browse-toggle');
+  const secondary = document.getElementById('secondary');
+
+  if (browseBtn && secondary) {
+    browseBtn.addEventListener('click', () => {
+      const isOpen = secondary.classList.toggle('browse-open');
+      browseBtn.setAttribute('aria-expanded', String(isOpen));
+      browseBtn.innerHTML = isOpen ? '&#10005; CLOSE' : '&#9776; BROWSE IMAGES';
+    });
+  }
+
+  // On mobile: move #secondary to just before #content-container (above page content)
+  // On desktop/tablet: restore it inside .header-inner
+  function positionSecondaryNav() {
+    const sec = document.getElementById('secondary');
+    const headerInner = document.querySelector('.header-inner');
+    const contentContainer = document.getElementById('content-container');
+
+    if (!sec || !headerInner) return;
+
+    if (window.innerWidth <= 768 && contentContainer) {
+      if (sec.parentNode !== contentContainer.parentNode) {
+        contentContainer.parentNode.insertBefore(sec, contentContainer);
+      }
+    } else {
+      if (sec.parentNode !== headerInner) {
+        const hoaLink = document.getElementById('hoa-site-link');
+        hoaLink
+          ? headerInner.insertBefore(sec, hoaLink)
+          : headerInner.appendChild(sec);
+      }
+    }
+  }
+
+  positionSecondaryNav();
+  window.addEventListener('resize', positionSecondaryNav);
+</script>
