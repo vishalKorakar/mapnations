@@ -122,7 +122,7 @@ const chapters = await fetchChapters();
 
     if (!sec || !headerInner) return;
 
-    if (window.innerWidth <= 768 && contentContainer) {
+    if (window.innerWidth <= 768 && contentContainer && contentContainer.parentNode) {
       if (sec.parentNode !== contentContainer.parentNode) {
         contentContainer.parentNode.insertBefore(sec, contentContainer);
       }

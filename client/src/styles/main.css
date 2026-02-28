@@ -1448,6 +1448,7 @@ footer p#footer-credit a {
     padding: 0;
     box-sizing: border-box;
     background-color: #003f46;
+    margin-bottom: 20px;
   }
 
   .browse-toggle {
