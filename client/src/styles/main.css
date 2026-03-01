@@ -1575,7 +1575,17 @@ footer p#footer-credit a {
   }
 
   #hoa-site-link {
-    display: none;
+    display: inline-block;
+    float: none;
+    position: static;
+    margin: 6px 0 0 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  #hoa-site-link a {
+    font-size: 12px;
   }
   
   #content {
