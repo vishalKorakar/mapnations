@@ -1193,6 +1193,10 @@ footer p#footer-credit a {
     max-width: 100%;
     overflow-x: hidden;
   }
+
+  #sidebar div.hr {
+    display: none;
+  }
   
   header {
     width: 100%;
@@ -1368,6 +1372,10 @@ footer p#footer-credit a {
 @media screen and (max-width: 768px) {
   .mobile-menu-toggle {
     display: block;
+  }
+
+  #sidebar div.hr {
+    display: none;
   }
   
   header {
@@ -1633,9 +1641,18 @@ footer p#footer-credit a {
   
   /* Chapter cards */
   .chapter-card,
-  article {
+  article,
+  .chapter {
     width: 100% !important;
+    box-sizing: border-box !important;
     margin: 10px 0 !important;
+    min-height: unset !important;
+  }
+
+  .chapter a img {
+    float: none !important;
+    display: block;
+    margin: 0 auto 15px auto;
   }
   
   /* Footer mobile */
