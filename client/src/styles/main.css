@@ -752,23 +752,22 @@ p#highlight {
 }
 
 #content #book-promo p a {
-	background: url(/img/backgrounds/content-buy-now-button.jpg);
-	border-top: 1px solid #cfc6a4;
-	border-bottom: 1px solid #cfc6a4;
+	background: url(/img/backgrounds/buy-now.jpg);
 	color: #fff;
 	display: block;
 	font-family: 'CallunaRegular', 'Times New Roman', Times, serif;
 	font-size: 16px;
 	float: right;
-	height: 28px;
-	line-height: 28px;
+	height: 59px;
+	line-height: 30px;
 	padding: 0 25px;
+	text-align: center;
 	text-decoration: none;
-	text-shadow: 1px 1px #1c4c5b;
+	text-shadow: 1px 1px #83210a;
 }
- 
+
 #content #book-promo p a:hover {
-	background-position: 0 -40px;
+	background-position: 0 0;
 }
 
 /* Grid of Five
@@ -1016,7 +1015,7 @@ aside {
 }
 
 #sidebar a#buy-now:hover {
-	background-position: 0 -59px;
+	background-position: 0 0;
 }
 
 #sidebar #book-promo p {

@@ -51,7 +51,7 @@ const reviews = (attr.Sections ?? []).filter(
                 <center><h5><em>{b?.Description[0]?.children[0]?.text}</em></h5></center>
                 <div id="book-promo">
                     <img src={b?.Description[3]?.image?.url} alt={b?.Description[3]?.image?.alternativeText || 'Book cover'} />
-                    <p><a href={b?.Description[6]?.children[1]?.url} target="_blank">Buy Now</a></p>
+                    <p><a href={b?.Description[4]?.children[1]?.url} target="_blank">&nbsp;<br /><strong>Buy Now</strong></a></p>
 
                 </div>
                 
