@@ -39,7 +39,7 @@ const formattedDate = article.articleDate
 // Get featured image URL
 const getFeaturedImageUrl = () => {
   const img = article.image || article.featuredImage;
-  if (img?.url) return `${STRAPI_URL}${img.url}`;
+  if (img?.url) return `${img.url}`; //${STRAPI_URL}
   return null;
 };
 const featuredImageUrl = getFeaturedImageUrl();
@@ -226,7 +226,7 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
     const MAX_SCALE = 4;
 
     function applyTransform() {
-      img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+      img?.style?.transform && (img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`);
     }
 
     document.getElementById('zoom-in')?.addEventListener('click', () => {

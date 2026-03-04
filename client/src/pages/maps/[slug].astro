@@ -27,9 +27,9 @@ const getImageUrl = (format?: string) => {
   if (!img) return null;
   
   if (format && img.formats?.[format]) {
-    return `${STRAPI_URL}${img.formats[format].url}`;
+    return `${img.formats[format].url}`;
   }
-  return img.url ? `${STRAPI_URL}${img.url}` : null;
+  return img.url ? `${img.url}` : null; //${STRAPI_URL}
 };
 
 const fullImageUrl = getImageUrl();
