@@ -123,12 +123,28 @@ export async function searchMaps(query) {
   });
 }
 
-// Fetch all blog articles
+// Fetch all blog articles (handles multiple pages)
 export async function fetchArticles() {
-  const json = await strapiFetch(
-    `/api/articles?sort[0]=createdAt:desc&populate=*`
-  );
-  return json.data ?? [];
+  let allArticles = [];
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const json = await strapiFetch(
+      `/api/articles?sort[0]=createdAt:desc&populate=*&pagination[page]=${page}&pagination[pageSize]=100`
+    );
+    const articles = json.data ?? [];
+    allArticles = allArticles.concat(articles);
+
+    const pagination = json.meta?.pagination;
+    if (!pagination || page >= pagination.pageCount) {
+      hasMore = false;
+    } else {
+      page++;
+    }
+  }
+
+  return allArticles;
 }
 
 // Fetch single article by slug

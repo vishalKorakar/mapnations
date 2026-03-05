@@ -39,7 +39,7 @@ const formattedDate = article.articleDate
 // Get featured image URL
 const getFeaturedImageUrl = () => {
   const img = article.image || article.featuredImage;
-  if (img?.url) return `${img.url}`; //${STRAPI_URL}
+  if (img?.url) return `${img.url}`; //
   return null;
 };
 const featuredImageUrl = getFeaturedImageUrl();
@@ -172,7 +172,11 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
         <!-- Comments section -->
         <div id="comments" class="comments-section">
           <h2>Leave a Reply</h2>
-          <form class="comment-form" onsubmit="return false;">
+          <div id="comment-success" style="display:none; color:#004146; margin-bottom:16px; font-family: Arial, Helvetica, sans-serif; font-size:14px;">
+            Thank you for your comment! It will appear after review.
+          </div>
+          <div id="comment-error" style="display:none; color:#962f11; margin-bottom:16px; font-family: Arial, Helvetica, sans-serif; font-size:14px;"></div>
+          <form class="comment-form" id="comment-form">
             <div class="form-row">
               <input type="text" name="name" id="comment-name" required />
               <label for="comment-name">Name (required)</label>
@@ -189,7 +193,7 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
               <textarea name="comment" id="comment-text" rows="10"></textarea>
             </div>
             <div class="form-row">
-              <button type="submit" class="submit-btn">Submit Comment</button>
+              <button type="submit" class="submit-btn" id="comment-submit">Submit Comment</button>
             </div>
           </form>
         </div>
@@ -209,6 +213,52 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
       window.location.href = `/blog?category=${encodeURIComponent(val)}`;
     } else {
       window.location.href = '/blog';
+    }
+  });
+
+  // Comment form submission
+  const commentForm = document.getElementById('comment-form') as HTMLFormElement | null;
+  const commentSuccess = document.getElementById('comment-success') as HTMLElement | null;
+  const commentError = document.getElementById('comment-error') as HTMLElement | null;
+  const commentSubmit = document.getElementById('comment-submit') as HTMLButtonElement | null;
+
+  commentForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = (document.getElementById('comment-name') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('comment-email') as HTMLInputElement).value.trim();
+    const text = (document.getElementById('comment-text') as HTMLTextAreaElement).value.trim();
+
+    if (!name || !email || !text) return;
+
+    if (commentSubmit) commentSubmit.disabled = true;
+    if (commentError) commentError.style.display = 'none';
+
+    try {
+      const res = await fetch('https://useful-bird-4f65a1d6ee.strapiapp.com/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          data: {
+            Name: name,
+            Email: email,
+            Comment: [{ type: 'paragraph', children: [{ type: 'text', text }] }],
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error?.message || 'Submission failed.');
+      }
+
+      commentForm.style.display = 'none';
+      if (commentSuccess) commentSuccess.style.display = 'block';
+    } catch (err: any) {
+      if (commentError) {
+        commentError.textContent = err.message || 'Something went wrong. Please try again.';
+        commentError.style.display = 'block';
+      }
+      if (commentSubmit) commentSubmit.disabled = false;
     }
   });
 

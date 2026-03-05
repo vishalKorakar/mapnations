@@ -34,16 +34,17 @@ articles.forEach((article: any) => {
 const archiveList = Array.from(archives.values()).sort((a, b) => b.key.localeCompare(a.key));
 
 // Helper to get image URL
+const toAbsolute = (url: string) => url.startsWith('http') ? url : `${STRAPI_URL}${url}`;
 const getImageUrl = (article: any) => {
   const img = article.image || article.featuredImage;
   if (img) {
     const file = img.formats?.thumbnail ?? img;
-    return file?.url ? `${STRAPI_URL}${file.url}` : null;
+    return file?.url ? toAbsolute(file.url) : null;
   }
   const contents = article.Contents || [];
   const imageBlock = contents.find((b: any) => b.type === 'image');
   if (imageBlock?.image?.url) {
-    return `${STRAPI_URL}${imageBlock.image.url}`;
+    return toAbsolute(imageBlock.image.url);
   }
   return null;
 };
