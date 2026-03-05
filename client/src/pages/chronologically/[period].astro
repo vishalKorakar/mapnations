@@ -38,7 +38,7 @@ const getImageUrl = (map: any) => {
   const img = map.image;
   if (!img) return null;
   const file = img.formats?.thumbnail ?? img;
-  return file?.url ? `${STRAPI_URL}${file.url}` : null;
+  return file?.url ? `${file.url}` : null;
 };
 ---
 

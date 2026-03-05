@@ -142,7 +142,8 @@ const metadata = [
               <div id="zoom-result" class="img-zoom-result"></div>
             </div>
             
-            <p class="zoom-hint">Hover over image to zoom • Click to open full size</p>
+            <p class="zoom-hint desktop-hint">Hover over image to zoom • Click to open full size</p>
+            <p class="zoom-hint mobile-hint">Pinch to zoom • Double-tap to zoom • Drag to pan</p>
           ) : (
             <p>No image available for this map.</p>
           )}
@@ -342,6 +343,130 @@ const metadata = [
       
       img.style.cursor = 'crosshair';
     }
+
+    // ── Mobile touch zoom ──────────────────────────────────────────
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (isTouchDevice && imgEl && containerEl) {
+      // Hide the desktop hover-zoom elements entirely on touch
+      if (lensEl) lensEl.style.display = 'none';
+      if (resultEl) resultEl.style.display = 'none';
+      if (imgEl) imgEl.style.cursor = 'default';
+
+      // Remove the desktop mouse listeners so they don't interfere
+      containerEl.removeEventListener('mouseenter', () => {});
+      containerEl.removeEventListener('mouseleave', () => {});
+
+      const touchImg = imgEl;
+      const touchContainer = containerEl;
+
+      touchContainer.style.overflow = 'hidden';
+
+      let scale = 1;
+      let translateX = 0;
+      let translateY = 0;
+
+      // Pinch state
+      let startPinchDist = 0;
+      let startPinchScale = 1;
+
+      // Pan state
+      let panStartX = 0;
+      let panStartY = 0;
+      let panStartTX = 0;
+      let panStartTY = 0;
+
+      // Double-tap state
+      let lastTapTime = 0;
+
+      function getPinchDist(t0: Touch, t1: Touch) {
+        const dx = t0.clientX - t1.clientX;
+        const dy = t0.clientY - t1.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      function clamp() {
+        const cW = touchContainer.offsetWidth;
+        const cH = touchContainer.offsetHeight;
+        const iW = touchImg.offsetWidth;
+        const iH = touchImg.offsetHeight;
+        const scaledW = iW * scale;
+        const scaledH = iH * scale;
+        const minX = scaledW > cW ? cW - scaledW : 0;
+        const minY = scaledH > cH ? cH - scaledH : 0;
+        translateX = Math.min(0, Math.max(minX, translateX));
+        translateY = Math.min(0, Math.max(minY, translateY));
+      }
+
+      function applyTransform() {
+        touchImg.style.transformOrigin = '0 0';
+        touchImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+      }
+
+      function resetZoom() {
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        applyTransform();
+      }
+
+      touchContainer.addEventListener('touchstart', (e: TouchEvent) => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          startPinchDist = getPinchDist(e.touches[0], e.touches[1]);
+          startPinchScale = scale;
+        } else if (e.touches.length === 1) {
+          const now = Date.now();
+          if (now - lastTapTime < 280) {
+            // Double-tap: toggle zoom
+            e.preventDefault();
+            if (scale > 1) {
+              resetZoom();
+            } else {
+              const rect = touchImg.getBoundingClientRect();
+              const tapX = e.touches[0].clientX - rect.left;
+              const tapY = e.touches[0].clientY - rect.top;
+              scale = 2.5;
+              translateX = -(tapX * (scale - 1));
+              translateY = -(tapY * (scale - 1));
+              clamp();
+              applyTransform();
+            }
+            lastTapTime = 0;
+            return;
+          }
+          lastTapTime = now;
+
+          if (scale > 1) {
+            e.preventDefault();
+            panStartX = e.touches[0].clientX;
+            panStartY = e.touches[0].clientY;
+            panStartTX = translateX;
+            panStartTY = translateY;
+          }
+        }
+      }, { passive: false });
+
+      touchContainer.addEventListener('touchmove', (e: TouchEvent) => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const dist = getPinchDist(e.touches[0], e.touches[1]);
+          scale = Math.min(5, Math.max(1, startPinchScale * (dist / startPinchDist)));
+          clamp();
+          applyTransform();
+        } else if (e.touches.length === 1 && scale > 1) {
+          e.preventDefault();
+          translateX = panStartTX + (e.touches[0].clientX - panStartX);
+          translateY = panStartTY + (e.touches[0].clientY - panStartY);
+          clamp();
+          applyTransform();
+        }
+      }, { passive: false });
+
+      touchContainer.addEventListener('touchend', () => {
+        if (scale < 1.05) resetZoom();
+      });
+    }
   });
 </script>
 
@@ -393,5 +518,31 @@ const metadata = [
     font-size: 13px;
     margin-top: 10px;
     font-style: italic;
+  }
+
+  /* Show desktop hint on pointer devices, mobile hint on touch */
+  .mobile-hint { display: none; }
+
+  @media (pointer: coarse) {
+    .desktop-hint { display: none; }
+    .mobile-hint { display: block; }
+
+    .img-zoom-container {
+      overflow: hidden;
+      touch-action: none;
+      cursor: default !important;
+    }
+
+    .img-zoom-container img {
+      cursor: default !important;
+      transition: transform 0.1s ease;
+      will-change: transform;
+    }
+
+    /* Hide the desktop lens/result on touch screens */
+    .img-zoom-lens,
+    .img-zoom-result {
+      display: none !important;
+    }
   }
 </style>
