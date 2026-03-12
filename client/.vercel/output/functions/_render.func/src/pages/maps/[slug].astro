@@ -4,16 +4,6 @@ import { fetchMaps, fetchMapBySlug, STRAPI_URL } from '../../lib/strapi';
 import Header from '../../components/header.astro';
 import Footer from '../../components/footer.astro';
 
-// Get all maps for static paths
-export async function getStaticPaths() {
-  const maps = await fetchMaps();
-  return maps
-    .filter((map: any) => map.slug != null && map.slug !== '')
-    .map((map: any) => ({
-      params: { slug: String(map.slug) },
-    }));
-}
-
 const { slug } = Astro.params;
 const map = await fetchMapBySlug(slug);
 
@@ -34,8 +24,8 @@ const getImageUrl = (format?: string) => {
 
 const fullImageUrl = getImageUrl();
 
-// Get all maps for navigation (exclude maps with missing/invalid slugs)
-const allMaps = (await fetchMaps()).filter((m: any) => m.slug != null && m.slug !== '' && m.slug !== 'null' && m.slug !== 'undefined');
+// Get all maps for navigation
+const allMaps = await fetchMaps();
 const currentIndex = allMaps.findIndex((m: any) => m.slug === slug);
 const prevMap = currentIndex > 0 ? allMaps[currentIndex - 1] : null;
 const nextMap = currentIndex < allMaps.length - 1 ? allMaps[currentIndex + 1] : null;

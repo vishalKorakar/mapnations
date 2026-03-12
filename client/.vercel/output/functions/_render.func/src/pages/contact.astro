@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { fetchPageBySlug } from '../lib/strapi.js';
+import { renderBlocks } from '../lib/render';
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
+
+const entry = await fetchPageBySlug('contact');
+if (!entry) {
+  throw new Response('Contact page not found', { status: 404 });
+}
+const attrs = entry.Sections.find((s: any) => s.__component === 'sections.information');
+---
+<Layout>
+    <div id="wrapper">
+      <Header />
+        <div id="content-container" class="clearfix">
+            <section id="content" class="chapter-list">
+            <div set:html={renderBlocks(attrs.Description)}></div>
+            </section>
+        </div>
+    </div>
+    <Footer />
+</Layout>

@@ -1,0 +1,63 @@
+---
+import { fetchPageBySlug } from '../lib/strapi';
+import Header from '../components/header.astro';
+import Book from '../components/book.astro';
+import Footer from '../components/footer.astro';
+import Chapter from '../components/chapters.astro';
+import Layout from '../layouts/Layout.astro';
+import { renderInline, renderBlocks } from '../lib/render';
+
+const pages = await fetchPageBySlug('home');
+// const pageItems = (pages ?? []).map((p: any) => ({
+//   id: p?.id ?? '',
+//   title: p?.title ?? '',
+//   slug: p?.slug ?? ''
+// }));
+
+
+
+const info = pages?.Sections?.find((s:any)=>s.__component==='sections.information');
+const blocks = info?.Description ?? [];
+const firstPara = blocks.find((b:any)=>b.type==='paragraph');
+const restBlocks = blocks.filter((b:any,i:number)=>b!==firstPara);
+---
+
+<Layout>
+    <div id="wrapper">
+      <Header />
+      <Book />
+    
+      <div id="content-container" class="clearfix">
+        
+        <!-- <section id="home-content">
+          <h1><span>{pages[2]?.Sections[0]?.title}</span></h1>
+          <p id="highlight">{pages[2]?.Sections[0]?.Description[0].children[0].text} <br> This is a companion site to the book, <em>Mapping the Nation</em>, which explores a tremendously creative era in American cartography.</p>
+          <p> From maps of disease and the weather to the earliest maps of the national population, this was a period when the very concept of a map was reinvented. By the early twentieth century, maps had become common tools of analysis, communication, and visual representation in an increasingly complex nation.</p>
+          <p> Today we live in a world that is saturated with maps and graphic knowledge. The maps on this site reveal how this involved a fundamentally new way of thinking.</p>
+        </section> -->
+
+        <section id="home-content">
+          <h1><span>{info?.title}</span></h1>
+        
+          {firstPara && (
+            <p id="highlight" set:html={(firstPara.children??[]).map(renderInline).join('')}></p>
+          )}
+        
+          <div set:html={renderBlocks(restBlocks)}></div>
+        </section>
+
+        <Chapter />
+
+        <!-- <section id="content" class="chapter-list">
+          <h2><span>Browse Pages</span></h2>
+          {Chapter.map((p: any) => (
+            <article class="chapter">
+              <h3><a href={`/${p?.slug}`}>{p?.title}</a></h3>
+            </article>
+          ))}
+        </section> -->
+      </div>
+    </div>
+    <Footer />
+
+</Layout>

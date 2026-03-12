@@ -1,0 +1,315 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
+import { fetchArticles, STRAPI_URL } from '../lib/strapi';
+
+// Fetch all articles
+const articles = await fetchArticles();
+
+// Extract unique categories and their article counts
+const categoryCounts = new Map<string, number>();
+articles.forEach((article: any) => {
+  (article.categories || []).forEach((cat: any) => {
+    if (cat.categoryTitle) {
+      const title = cat.categoryTitle.trim();
+      categoryCounts.set(title, (categoryCounts.get(title) || 0) + 1);
+    }
+  });
+});
+const categories = Array.from(categoryCounts.keys()).sort();
+
+// Extract unique archives (year/month) from articles
+const archives = new Map();
+articles.forEach((article: any) => {
+  if (article.articleDate) {
+    const date = new Date(article.articleDate);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    if (!archives.has(key)) {
+      archives.set(key, { key, label });
+    }
+  }
+});
+const archiveList = Array.from(archives.values()).sort((a, b) => b.key.localeCompare(a.key));
+
+// Helper to get image URL
+const toAbsolute = (url: string) => url.startsWith('http') ? url : `${STRAPI_URL}${url}`;
+const getImageUrl = (article: any) => {
+  const img = article.image || article.featuredImage;
+  if (img) {
+    const file = img.formats?.thumbnail ?? img;
+    return file?.url ? toAbsolute(file.url) : null;
+  }
+  const contents = article.Contents || [];
+  const imageBlock = contents.find((b: any) => b.type === 'image');
+  if (imageBlock?.image?.url) {
+    return toAbsolute(imageBlock.image.url);
+  }
+  return null;
+};
+
+// Helper to get excerpt
+const getExcerpt = (article: any) => {
+  const content = article.Contents || [];
+  const firstPara = content.find((b: any) => b.type === 'paragraph');
+  if (!firstPara) return '';
+  const text = (firstPara.children || []).map((c: any) => c.text || '').join('');
+  return text.length > 200 ? text.substring(0, 200) + '...' : text;
+};
+---
+
+<Layout>
+  <div id="wrapper">
+    <Header />
+    <div id="content-container" class="clearfix">
+
+      <aside id="sidebar">
+
+        <div class="hr"><hr /></div>
+
+        <div class="sidebar-content">
+          <div>
+
+            <h3>Categories</h3>
+            <div class="category-dropdown-wrap">
+              <select id="category-select" class="category-select">
+                <option value="">All Posts</option>
+                {categories.map((cat) => (
+                  <option value={cat}>{cat} ({categoryCounts.get(cat) || 0})</option>
+                ))}
+              </select>
+              <span class="dropdown-arrow">&#9662;</span>
+            </div>
+
+            <h3>Archives</h3>
+            <ul>
+              {archiveList.map((archive) => (
+                <li>
+                  <a href={`/blog?archive=${archive.key}`}>{archive.label}</a>
+                </li>
+              ))}
+            </ul>
+
+            <h3>Links</h3>
+            <ul>
+              <li><a href="http://www.bostonraremaps.com/default.htm">Boston Rare Maps</a></li>
+              <li><a href="http://antiqueprintsblog.blogspot.com/">Chris Lane's antique prints blog</a></li>
+              <li><a href="http://www.davidrumsey.com" title="Enormous collection of maps.">David Rumsey Map Collection</a></li>
+              <li><a href="http://bigthink.com/blogs/strange-maps/">Frank Jacobs Strange Maps</a></li>
+              <li><a href="http://makingmaps.net/">Johy Krygier's Making Maps</a></li>
+              <li><a href="http://maps.bpl.org/" title="Historic maps at the BPL">Maps at the Boston Public Library</a></li>
+            </ul>
+
+            <h3>Subscribe</h3>
+            <ul>
+              <li><a href="/blog/feed">Entries (RSS)</a></li>
+            </ul>
+
+          </div>
+        </div>
+      </aside>
+
+      <section id="content" class="browse">
+        <h1><span>Blog</span></h1>
+        <p>Here we can continue to explore the relationship between maps and history. I welcome your comments, and your maps!</p>
+
+        <div id="filter-notice">
+          Filtering by category: <strong id="filter-label"></strong>
+          &nbsp;&mdash;&nbsp;
+          <a href="#" id="clear-filter">Show all posts &times;</a>
+        </div>
+
+        {articles.length > 0 ? (
+          articles.map((article: any) => {
+            const imgUrl = getImageUrl(article);
+            const excerpt = getExcerpt(article);
+            const articleCategories = (article.categories || []).map((c: any) => c.categoryTitle?.trim()).filter(Boolean).join('|||');
+            const archiveKey = article.articleDate
+              ? (() => {
+                  const d = new Date(article.articleDate);
+                  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                })()
+              : '';
+
+            return (
+              <article data-categories={articleCategories} data-archive={archiveKey}>
+                {imgUrl && (
+                  <a href={`/blog/${article.slug}`}>
+                    <img src={imgUrl} alt={article.title} />
+                  </a>
+                )}
+
+                <h3>
+                  <a href={`/blog/${article.slug}`}>{article.title}</a>
+                </h3>
+
+                {excerpt && <p>{excerpt}</p>}
+
+                <p class="map-meta">
+                  {article.articleDate && (
+                    <span>({article.articleDate})</span>
+                  )}
+                  {article.categories && article.categories.length > 0 && (
+                    <span>
+                      {' | '}
+                      {article.categories.map((cat: any, i: number) => (
+                        <span>
+                          <a href={`/blog?category=${encodeURIComponent(cat.categoryTitle?.trim())}`}>{cat.categoryTitle?.trim()}</a>
+                          {i < article.categories.length - 1 && ', '}
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                  {' | '}
+                  <a href={`/blog/${article.slug}`}>Read the Post »</a>
+                </p>
+              </article>
+            );
+          })
+        ) : (
+          <p>No blog posts found.</p>
+        )}
+
+        <p id="no-results">No posts found in this category.</p>
+      </section>
+
+    </div>
+  </div>
+  <Footer />
+</Layout>
+
+<style>
+  /* Category dropdown */
+  .category-dropdown-wrap {
+    position: relative;
+    width: 100%;
+    margin-bottom: 22px;
+  }
+
+  .category-select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #eeede3;
+    border: 1px solid #c4b88d;
+    border-radius: 0;
+    color: #3d3725;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    padding: 9px 30px 9px 12px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .category-select:hover {
+    border-color: #004146;
+  }
+
+  .category-select:focus {
+    border-color: #004146;
+    box-shadow: 0 0 0 2px rgba(0, 65, 70, 0.12);
+  }
+
+  .dropdown-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #004146;
+    font-size: 13px;
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  /* Filter notice banner */
+  #filter-notice {
+    display: none;
+    background: #e9e8da;
+    border-left: 3px solid #962f11;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #6b6242;
+  }
+
+  #filter-notice strong {
+    color: #3d3725;
+  }
+
+  #filter-notice a {
+    color: #962f11;
+    text-decoration: none;
+    font-family: 'CallunaBoldItalic', 'Times New Roman', Times, serif;
+    font-size: 13px;
+  }
+
+  #filter-notice a:hover {
+    text-decoration: underline;
+    color: #000;
+  }
+
+  /* No results */
+  #no-results {
+    display: none;
+    color: #6b6242;
+    font-size: 13px;
+    font-style: italic;
+    padding: 10px 0 30px 0;
+  }
+</style>
+
+<script>
+  (function () {
+    const select = document.getElementById('category-select') as HTMLSelectElement | null;
+    const notice = document.getElementById('filter-notice') as HTMLElement | null;
+    const filterLabel = document.getElementById('filter-label') as HTMLElement | null;
+    const noResults = document.getElementById('no-results') as HTMLElement | null;
+    const articles = document.querySelectorAll<HTMLElement>('#content article');
+
+    function applyFilter(category: string) {
+      let visibleCount = 0;
+
+      articles.forEach((article) => {
+        const cats = (article.dataset.categories || '').split('|||').filter(Boolean);
+        const show = !category || cats.includes(category);
+        article.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
+      });
+
+      if (notice) notice.style.display = category ? 'block' : 'none';
+      if (filterLabel) filterLabel.textContent = category;
+      if (noResults) noResults.style.display = visibleCount === 0 && category ? 'block' : 'none';
+    }
+
+    // On load: read URL param and sync dropdown
+    const initial = new URLSearchParams(window.location.search).get('category') || '';
+    if (select && initial) select.value = initial;
+    applyFilter(initial);
+
+    // On dropdown change: update URL and filter
+    select?.addEventListener('change', () => {
+      const val = select.value;
+      const url = new URL(window.location.href);
+      if (val) {
+        url.searchParams.set('category', val);
+      } else {
+        url.searchParams.delete('category');
+      }
+      window.history.pushState({}, '', url.toString());
+      applyFilter(val);
+    });
+
+    // Clear filter link
+    document.getElementById('clear-filter')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (select) select.value = '';
+      const url = new URL(window.location.href);
+      url.searchParams.delete('category');
+      window.history.pushState({}, '', url.toString());
+      applyFilter('');
+    });
+  })();
+</script>

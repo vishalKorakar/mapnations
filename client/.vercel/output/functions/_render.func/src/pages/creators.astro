@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
+import { fetchMaps, STRAPI_URL } from '../lib/strapi';
+
+// Fetch all maps
+const allMaps = await fetchMaps();
+
+// Group maps by creator
+const creatorMap = new Map<string, any[]>();
+
+allMaps.forEach((map: any) => {
+  const creator = map.creatorName || 'Unknown Creator';
+  if (!creatorMap.has(creator)) {
+    creatorMap.set(creator, []);
+  }
+  creatorMap.get(creator)!.push(map);
+});
+
+// Sort creators alphabetically and convert to array
+const creators = Array.from(creatorMap.entries())
+  .sort((a, b) => a[0].localeCompare(b[0]))
+  .map(([name, maps]) => ({ name, maps }));
+
+// Helper to get image URL
+const getImageUrl = (map: any) => {
+  const img = map.image;
+  if (!img) return null;
+  const file = img.formats?.thumbnail ?? img;
+  return file?.url ? `${file.url}` : null;
+};
+---
+
+<Layout>
+  <div id="wrapper">
+    <Header />
+    <div id="content-container" class="clearfix">
+      <section id="content" class="browse">
+        <h1><span>Browse Maps by Creator</span></h1>
+        <p>{creators.length} creator{creators.length !== 1 ? 's' : ''} found</p>
+        
+        {creators.map((creator) => (
+          <div class="creator-section">
+            <h2>
+              <span>{creator.name}</span>
+              <span class="map-count">({creator.maps.length} map{creator.maps.length !== 1 ? 's' : ''})</span>
+            </h2>
+            
+            {creator.maps.map((map: any) => {
+              const imgUrl = getImageUrl(map);
+              const viewerUrl = map.slug ? `/maps/${map.slug}` : '#';
+              
+              return (
+                <article>
+                  <a href={viewerUrl}>
+                    {imgUrl && <img src={imgUrl} alt={map.mapTitle} loading="lazy" />}
+                  </a>
+                  
+                  <h3>
+                    <a href={viewerUrl}>{map.mapTitle || 'Untitled Map'}</a>
+                  </h3>
+                  
+                  {map.Description && <p>{map.Description}</p>}
+                  
+                  <p class="map-meta">
+                    {map.mapYear && <span>{map.mapYear}</span>}
+                    {map.mapYear && <span> | </span>}
+                    <a href={viewerUrl}>View the Map »</a>
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+        ))}
+      </section>
+    </div>
+  </div>
+  <Footer />
+</Layout>
+

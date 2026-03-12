@@ -1,0 +1,738 @@
+Wednesday Feb 25 — Foundation (2–3 hrs)
+
+  These are the minimum changes that unblock everything else. Do these first
+  before anything visual.
+
+  1. Fix the viewport meta tag
+
+  File: src/layouts/Layout.astro, line 16
+
+  Change:
+  <meta name="viewport" content="width=1058" />
+  To:
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  This is the root cause of all mobile problems. Without this, no CSS media
+  query you write will work on a real phone.
+
+  2. Remove the broken duplicate stylesheet link
+
+  File: src/layouts/Layout.astro, line 19
+
+  Delete this line entirely — it 404s in production and causes a double-load in
+  dev:
+  <link rel="stylesheet" href="/src/styles/main.css" />
+  The import "../styles/main.css" in the frontmatter (line 2) already handles
+  this correctly.
+
+  3. Add the 5 global CSS fixes to main.css
+
+  File: src/styles/main.css — add immediately after the existing reset block
+  (after line ~90)
+
+  /* ============================================================
+     RESPONSIVE FOUNDATION — added Feb 2026
+     ============================================================ */
+
+  /* Box model */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* Prevent horizontal scroll */
+  html, body { overflow-x: hidden; }
+
+  /* Fluid outer wrapper — replaces the fixed 1058px width */
+  #wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* Fluid container fallback */
+  .container { width: 100%; }
+
+  The existing CSS has #wrapper { width: 1058px } somewhere deeper — these rules
+   override it since they come later. Search for #wrapper in main.css and change
+   width: 1058px to width: 100% directly to avoid specificity fights.
+
+  4. Commit
+
+  git add -p
+  git commit -m "Day 1: fix viewport, remove dupe stylesheet, fluid wrapper"
+
+  End-of-day check: Open Chrome DevTools, toggle device emulator to iPhone SE
+  (375px). The page should no longer require pinch-to-zoom — content will be
+  jumbled but filling the screen width, not shrunk to a tiny desktop view.
+
+  ---
+  Thursday Feb 26 — Header & Navigation (3–4 hrs)
+
+  The header is the most complex component. Fix it fully today.
+
+  5. Rebuild header.astro layout with flexbox
+
+  File: src/components/header.astro
+
+  The header has three zones: logo area (left), primary nav (right), secondary
+  browse bar (below). The current layout uses fixed widths and floats. Add a
+  <style> block to the component:
+
+  /* Mobile-first header */
+  header {
+    width: 100%;
+    min-height: auto; /* override the hardcoded 254px */
+    background-color: #1B3A5C; /* keep existing color */
+    overflow: visible;
+  }
+
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 12px 16px;
+  }
+
+  /* Logo */
+  #logo {
+    width: auto;
+    height: auto;
+    flex: 0 0 auto;
+  }
+  #logo a, #logo img {
+    width: auto;
+    height: auto;
+    max-width: 320px;
+  }
+
+  /* Primary nav — hidden on mobile, shown on desktop */
+  #primary {
+    display: none;
+  }
+  #primary ol {
+    display: flex;
+    width: auto;
+    height: auto;
+    gap: 4px;
+  }
+  #primary ol li {
+    width: auto;
+    height: auto;
+  }
+  #primary ol li a {
+    width: auto;
+    height: auto;
+    padding: 8px 16px;
+    display: block;
+  }
+
+  /* Show primary nav on desktop */
+  @media (min-width: 768px) {
+    #primary { display: block; }
+    .nav-toggle { display: none !important; }
+  }
+
+  /* Secondary browse bar */
+  #secondary {
+    width: 100%;
+    height: auto;
+  }
+
+  6. Add the hamburger button to header.astro
+
+  Inside the <div class="header-inner"> (or equivalent wrapper in header.astro),
+   add the toggle button right before the primary nav <ol>:
+
+  <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  Add CSS for it:
+  .nav-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #fff;
+    transition: transform 0.3s;
+  }
+
+  7. Add the mobile nav JavaScript to header.astro
+
+  Add a <script> tag at the bottom of header.astro:
+  const toggle = document.querySelector('.nav-toggle');
+  const primaryNav = document.querySelector('#primary');
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = primaryNav.classList.toggle('mobile-open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  Add CSS:
+  @media (max-width: 767px) {
+    #primary.mobile-open {
+      display: block;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #1B3A5C;
+      z-index: 100;
+      padding: 60px 24px 24px;
+      overflow-y: auto;
+    }
+    #primary.mobile-open ol {
+      flex-direction: column;
+    }
+    #primary.mobile-open ol li a {
+      padding: 16px 0;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+  }
+
+  8. Fix menu.astro secondary nav for touch
+
+  File: src/components/menu.astro
+
+  The "By Chapter" and "Chronologically" dropdowns currently only open on CSS
+  hover — they don't work on any touchscreen. Add a <script> block to
+  menu.astro:
+
+  document.querySelectorAll('#secondary ol > li').forEach(item => {
+    const hasDropdown = item.querySelector('ol');
+    if (!hasDropdown) return;
+    item.addEventListener('click', e => {
+      if (window.innerWidth < 768) {
+        e.preventDefault();
+        item.classList.toggle('touch-open');
+      }
+    });
+  });
+
+  And add CSS:
+  @media (max-width: 767px) {
+    #secondary {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    #secondary ol {
+      flex-direction: column;
+      width: 100%;
+    }
+    #secondary ol li { width: 100%; }
+    #secondary ol li a {
+      display: block;
+      padding: 12px 20px;
+      font-size: 16px;
+    }
+    /* Show sub-nav on touch-open */
+    #secondary ol li.touch-open > ol {
+      display: block;
+      position: static;
+      visibility: visible;
+    }
+  }
+
+  9. Commit
+
+  git commit -m "Day 2: responsive header, hamburger nav, touch dropdowns"
+
+  End-of-day check: On iPhone SE (375px): hamburger appears, tapping it opens
+  full-screen nav with primary links. "Browse Images" section in secondary nav
+  is scrollable.
+
+  ---
+  Friday Feb 27 — Homepage & Content Pages (4–5 hrs)
+
+  10. Fix the homepage two-column layout
+
+  File: src/styles/main.css — find the #home-content, #content-container, aside
+  rules
+
+  The homepage has #home-content (700px float left) and <aside id="sidebar">
+  (240px float right). Add media queries:
+
+  /* Homepage layout — responsive */
+  @media (max-width: 900px) {
+    #content-container {
+      display: flex;
+      flex-direction: column;
+    }
+    #home-content {
+      width: 100%;
+      float: none;
+      order: 1;
+    }
+    aside#sidebar {
+      width: 100%;
+      max-width: 320px;
+      float: none;
+      margin: 24px auto;
+      order: 2;
+    }
+  }
+
+  /* Stack chapter cards on mobile */
+  @media (max-width: 768px) {
+    .chapter {
+      width: 100%;
+      float: none;
+      min-height: auto;
+    }
+    p#highlight {
+      width: 100%;
+    }
+  }
+
+  11. Fix book.astro — sidebar book promo
+
+  File: src/components/book.astro
+
+  The "Buy Now" and "Learn More" are CSS sprite-based buttons (invisible text,
+  background images). On mobile they're the wrong size. Add scoped styles to
+  book.astro:
+
+  #sidebar {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+  #book-promo h3 {
+    height: auto; /* override the fixed 92px */
+    padding: 8px 0;
+  }
+  /* Make the sprite-buttons scale */
+  #buy-now, #learn-more {
+    display: block;
+    max-width: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  12. Fix .browse article cards — all browse pages
+
+  File: src/styles/main.css — find .browse article
+
+  These are the map listing cards used in creators, chronologically, search,
+  blog, chapters. All locked at 660px float:left.
+
+  @media (max-width: 768px) {
+    .browse article {
+      width: 100%;
+      float: none;
+      margin-bottom: 20px;
+    }
+    #content, #content.browse, #content.chapter-list {
+      width: 100%;
+      float: none;
+    }
+    /* Blog thumbnail stays fixed size but card goes full width */
+    .browse article img {
+      flex-shrink: 0;
+    }
+  }
+
+  13. Fix about.astro layout
+
+  File: src/pages/about.astro
+
+  Add scoped styles to the page:
+  @media (max-width: 640px) {
+    img.alignleft {
+      float: none;
+      display: block;
+      margin: 0 auto 16px;
+      max-width: 220px;
+    }
+    #content {
+      width: 100%;
+      float: none;
+    }
+  }
+
+  Also replace the hardcoded HTTP image URL for the author portrait. The file
+  susan-schulten-portrait.jpg exists locally at the project root — move it to
+  public/img/ and reference it as /img/susan-schulten-portrait.jpg instead of
+  the external HTTP URL.
+
+  14. Fix blog.astro two-column layout
+
+  File: src/pages/blog.astro
+
+  Blog has #content.browse (660px float left) + #sidebar (240px float right).
+  Add scoped styles:
+  @media (max-width: 900px) {
+    .blog-layout, #content-container {
+      display: flex;
+      flex-direction: column;
+    }
+    #content.browse {
+      width: 100%;
+      float: none;
+    }
+    #sidebar {
+      width: 100%;
+      float: none;
+      max-width: 100%;
+    }
+  }
+
+  15. Fix contact.astro
+
+  File: src/pages/contact.astro
+
+  Contact is mostly text from Strapi rich text. Add fluid width:
+  #content.chapter-list {
+    width: 100%;
+    max-width: 700px;
+    padding: 0 16px;
+  }
+  form input, form textarea, form select {
+    width: 100%;
+    font-size: 16px; /* prevents iOS auto-zoom */
+    padding: 10px;
+  }
+
+  16. Fix chapters.astro chapter cards
+
+  File: src/components/chapters.astro
+
+  Chapter cards are .chapter divs at width: 630px; float: left. Also add
+  loading="lazy" to the chapter thumbnail images here (it's missing).
+
+  Add scoped styles:
+  @media (max-width: 768px) {
+    .chapter {
+      width: 100%;
+      float: none;
+      display: flex;
+      flex-direction: column;
+    }
+    .chapter img {
+      width: 100%;
+      height: auto;
+      float: none;
+      margin: 0 0 12px 0;
+    }
+  }
+
+  17. Commit
+
+  git commit -m "Day 3: homepage layout, browse cards, about/blog/contact,
+  chapter cards"
+
+  End-of-day check: Homepage stacks book sidebar below chapter list on mobile.
+  All browse page cards go full-width. Blog sidebar stacks below posts.
+
+  ---
+  Saturday Feb 28 — Maps, Browse Pages & Footer (4–5 hrs)
+
+  18. Fix chapters/[slug].astro + MapCard.astro
+
+  File: src/pages/chapters/[slug].astro and src/components/MapCard.astro
+
+  The chapter map listing page shows a grid of map cards via <MapCard />.
+  Currently they inherit .browse article styles (660px float). The Day 3 fix to
+  .browse article handles this — verify it works here. Then improve the grid
+  layout specifically for this page:
+
+  Add scoped styles to chapters/[slug].astro:
+  @media (min-width: 600px) {
+    .chapter-maps {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .chapter-maps article {
+      float: none;
+      width: 100%;
+    }
+  }
+  @media (max-width: 599px) {
+    .chapter-maps article {
+      width: 100%;
+      float: none;
+    }
+  }
+
+  19. Fix maps/[slug].astro — individual map viewer
+
+  File: src/pages/maps/[slug].astro
+
+  Three issues here:
+
+  a) Metadata table overflow — the <table class="metadata-table"> breaks on
+  mobile. Add:
+  .metadata-table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Or convert to stacked layout on mobile */
+  @media (max-width: 640px) {
+    .metadata-table, .metadata-table tbody,
+    .metadata-table tr, .metadata-table td {
+      display: block;
+      width: 100%;
+    }
+    .metadata-table tr {
+      border-bottom: 1px solid #ddd;
+      padding: 8px 0;
+    }
+    .metadata-table td:first-child {
+      font-weight: bold;
+      color: #555;
+      padding-bottom: 4px;
+    }
+  }
+
+  b) Map navigation table — already has width: 100%, but verify
+  First/Prev/Next/Last links have enough tap-target height:
+  .map-nav-table td a {
+    display: block;
+    padding: 10px 8px;
+    min-height: 44px;
+  }
+
+  c) Touch zoom — the zoom feature uses mousemove only. Add touch support in the
+   existing <script> block:
+  // After the existing mousemove listener, add:
+  img.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const pos = getCursorPos(touch); // reuse existing getCursorPos
+    moveLens(pos);
+  }, { passive: false });
+
+  20. Fix chronologically/[period].astro
+
+  File: src/pages/chronologically/[period].astro
+
+  Same .browse article pattern as other browse pages — covered by Day 3 global
+  fix. Verify the period navigation links (First, Prev, Next, Last) have
+  adequate tap targets:
+  @media (max-width: 640px) {
+    .chrono-nav a {
+      padding: 12px 16px;
+      display: inline-block;
+      min-height: 44px;
+    }
+  }
+
+  21. Fix search.astro
+
+  File: src/pages/search.astro
+
+  The search results are dynamically rendered via template literals in a
+  <script> block. The result HTML uses float: left classes from .browse article.
+   The Day 3 fix handles the CSS — but also add loading="lazy" to the generated
+  <img> tags inside the JS template literal:
+
+  Find the template literal that builds result HTML and ensure the <img> has
+  loading="lazy" decoding="async".
+
+  Also make the search input itself mobile-friendly:
+  @media (max-width: 640px) {
+    #search-form input[type="search"] {
+      width: 100%;
+      font-size: 16px;
+      padding: 10px;
+    }
+  }
+
+  22. Fix creators.astro
+
+  File: src/pages/creators.astro
+
+  Creator sections use .creator-section divs with floated article cards. The Day
+   3 .browse article fix handles most of it. Add specific fix for the creator
+  section headings and images on mobile:
+  @media (max-width: 640px) {
+    .creator-section h2 {
+      font-size: 1.1rem;
+    }
+    .creator-section img {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  23. Fix footer.astro
+
+  File: src/components/footer.astro and src/styles/main.css footer rules
+
+  The footer is locked at 978px with sprite-based logo/credit (invisible text
+  replaced by background images). Add scoped styles to footer.astro:
+
+  footer {
+    width: 100%;
+  }
+  @media (max-width: 768px) {
+    /* Footer nav stacks vertically */
+    #footer-nav ol {
+      flex-direction: column;
+      gap: 8px;
+    }
+    #footer-nav ol li {
+      display: block;
+      width: 100%;
+    }
+    #footer-nav ol li a {
+      padding: 10px 0;
+      display: block;
+    }
+    /* The DU Penrose and footer credit logos: scale the background images */
+    #du-penrose {
+      background-size: contain;
+      background-repeat: no-repeat;
+      width: 100%;
+      max-width: 180px;
+    }
+    #footer-credit {
+      background-size: contain;
+      background-repeat: no-repeat;
+      width: 100%;
+      max-width: 200px;
+    }
+  }
+
+  24. Commit
+
+  git commit -m "Day 4: map viewer, browse grids, creators, search, footer"
+
+  ---
+  Sunday Mar 1 — Testing, Polish & Deploy (3–4 hrs)
+
+  25. Full cross-device testing matrix
+
+  Test every page at these exact viewport widths in Chrome DevTools (Device
+  Toolbar):
+
+  ┌──────────┬───────────────┬──────────────────────────────────────────────┐
+  │ Viewport │    Device     │                Pages to test                 │
+  ├──────────┼───────────────┼──────────────────────────────────────────────┤
+  │ 375px    │ iPhone SE     │ Homepage, any chapter, a map viewer, nav     │
+  │          │               │ open/close                                   │
+  ├──────────┼───────────────┼──────────────────────────────────────────────┤
+  │ 390px    │ iPhone 14     │ About, blog, search                          │
+  ├──────────┼───────────────┼──────────────────────────────────────────────┤
+  │ 768px    │ iPad portrait │ Homepage, creators, chronologically          │
+  ├──────────┼───────────────┼──────────────────────────────────────────────┤
+  │ 1024px   │ iPad          │ All pages (should match desktop)             │
+  │          │ landscape     │                                              │
+  ├──────────┼───────────────┼──────────────────────────────────────────────┤
+  │ 1280px   │ Laptop        │ Full walkthrough                             │
+  └──────────┴───────────────┴──────────────────────────────────────────────┘
+
+  For each viewport, verify:
+  - No horizontal scrollbar
+  - Hamburger appears ≤767px; tapping it opens and closes the nav
+  - Browse dropdowns (By Chapter, Chronologically) work on touch
+  - Homepage: book sidebar stacks below chapters on mobile
+  - Map viewer: metadata table scrolls or stacks; navigation arrows are tappable
+  - All images are visible and not overflowing
+  - Footer logos are visible on mobile
+
+  26. Fix the duplicate CSS import issue permanently
+
+  File: src/layouts/Layout.astro
+
+  The frontmatter import "../styles/main.css" (line 2) is the correct way — the
+  <link> tag (line 19) was already removed on Day 1. Double-check that
+  Tailwind's global.css is wired up if you want to use Tailwind utilities
+  anywhere. If not using Tailwind at all, uninstall or leave as-is.
+
+  27. Add missing loading="lazy" attributes
+
+  Files: src/components/chapters.astro, src/components/MapCard.astro,
+  src/pages/blog.astro
+
+  These three are the only pages where loading="lazy" is missing on images. Add
+  loading="lazy" decoding="async" to every <img> that loads from Strapi. This
+  dramatically improves chapter and blog page load times on mobile.
+
+  28. Fix the external HTTP image URLs
+
+  Files: src/components/book.astro, src/pages/about.astro
+
+  Both reference http://www.mappingthenation.com/img/... (not HTTPS). The
+  susan-schulten-portrait.jpg already exists at the project root — copy it to
+  public/img/susan-schulten-portrait.jpg and update the <img src> to
+  /img/susan-schulten-portrait.jpg. For the book cover in book.astro, either
+  host it in public/img/book-cover.jpg or serve it from Strapi.
+
+  29. Fluid typography (optional polish, ~30 min)
+
+  File: src/styles/main.css
+
+  Add at the top of the typography section:
+  body {
+    font-size: clamp(15px, 2vw, 18px);
+    line-height: 1.65;
+  }
+  h1 { font-size: clamp(22px, 4vw, 36px); }
+  h2 { font-size: clamp(18px, 3vw, 26px); }
+  h3 { font-size: clamp(15px, 2.5vw, 20px); }
+
+  30. Final commit and deploy check
+
+  git add -p
+  git commit -m "Day 5: testing fixes, lazy loading, fluid typography, image
+  URLs"
+
+  Run npm run build locally and verify there are no build errors. Check the
+  dist/ output for any /src/styles/main.css references that would 404.
+
+  ---
+  Summary — What you'll have by Sunday
+
+  ┌─────────┬─────────────────────┬────────────────────────────────────────┐
+  │   Day   │        Focus        │                 Output                 │
+  ├─────────┼─────────────────────┼────────────────────────────────────────┤
+  │ Wed Feb │ Viewport + wrapper  │ Page fills screen on mobile (jumbled   │
+  │  25     │                     │ but no zoom)                           │
+  ├─────────┼─────────────────────┼────────────────────────────────────────┤
+  │ Thu Feb │ Header + hamburger  │ Mobile nav fully working               │
+  │  26     │ nav                 │                                        │
+  ├─────────┼─────────────────────┼────────────────────────────────────────┤
+  │ Fri Feb │ Homepage + content  │ All text pages and cards               │
+  │  27     │ pages               │ mobile-friendly                        │
+  ├─────────┼─────────────────────┼────────────────────────────────────────┤
+  │ Sat Feb │ Maps + browse +     │ Full site works on mobile              │
+  │  28     │ footer              │                                        │
+  ├─────────┼─────────────────────┼────────────────────────────────────────┤
+  │ Sun Mar │ Test + polish       │ Production-ready                       │
+  │  1      │                     │                                        │
+  └─────────┴─────────────────────┴────────────────────────────────────────┘
+
+  Key files you'll touch most
+
+  - src/layouts/Layout.astro — viewport, stylesheet import
+  - src/styles/main.css — 90% of layout fixes, adding media queries
+  - src/components/header.astro — hamburger, flexbox header
+  - src/components/menu.astro — touch dropdown JS
+  - src/components/footer.astro — fluid footer
+  - src/components/book.astro — sidebar fluid
+  - src/components/chapters.astro — chapter card fix + lazy loading
+  - src/pages/maps/[slug].astro — metadata table + touch zoom
+  - src/pages/about.astro, blog.astro — two-column fix
+
+✻ Worked for 4m 44s
+                                                                                
+Total cost:            $1.26                                                    
+Total duration (API):  5m 20s                                                   
+Total duration (wall): 15h 18m 30s                                              
+Total code changes:    0 lines added, 0 lines removed                           
+Usage by model:
+    claude-haiku-4-5:  9.8k input, 246 output, 0 cache read, 0 cache write ($0.0110)
+   claude-sonnet-4-6:  3.0k input, 17.2k output, 406.6k cache read, 95.6k cache write ($1.25)
