@@ -1,10 +1,19 @@
 import { e as createComponent, f as createAstro, k as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { d as fetchMapsByPeriod, $ as $$Layout } from '../../chunks/Layout_-3ypR12o.mjs';
-import { $ as $$Header, a as $$Footer } from '../../chunks/footer_BYzcqzDa.mjs';
+import { e as fetchMapsByPeriod, $ as $$Layout } from '../../chunks/Layout_HMBnYElJ.mjs';
+import { $ as $$Header, a as $$Footer } from '../../chunks/footer_Co4KUagC.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const $$Astro = createAstro();
+function getStaticPaths() {
+  return [
+    { params: { period: "1811-1840" } },
+    { params: { period: "1841-1860" } },
+    { params: { period: "1861-1870" } },
+    { params: { period: "1871-1880" } },
+    { params: { period: "1881-1932" } }
+  ];
+}
 const $$period = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$period;
@@ -40,6 +49,7 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: $$period,
   file: $$file,
+  getStaticPaths,
   url: $$url
 }, Symbol.toStringTag, { value: 'Module' }));
 

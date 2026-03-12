@@ -1,7 +1,7 @@
 import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { e as fetchMaps, $ as $$Layout } from '../chunks/Layout_-3ypR12o.mjs';
-import { $ as $$Header, a as $$Footer } from '../chunks/footer_BYzcqzDa.mjs';
+import { g as fetchMaps, $ as $$Layout } from '../chunks/Layout_HMBnYElJ.mjs';
+import { $ as $$Header, a as $$Footer } from '../chunks/footer_Co4KUagC.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$Creators = createComponent(async ($$result, $$props, $$slots) => {

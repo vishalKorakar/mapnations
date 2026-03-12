@@ -1,8 +1,8 @@
 import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead, u as unescapeHTML } from '../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { f as fetchPageBySlug, $ as $$Layout } from '../chunks/Layout_-3ypR12o.mjs';
+import { f as fetchPageBySlug, $ as $$Layout } from '../chunks/Layout_HMBnYElJ.mjs';
 import { r as renderBlocks } from '../chunks/render_vnoDN9dY.mjs';
-import { $ as $$Header, a as $$Footer } from '../chunks/footer_BYzcqzDa.mjs';
+import { $ as $$Header, a as $$Footer } from '../chunks/footer_Co4KUagC.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$Contact = createComponent(async ($$result, $$props, $$slots) => {

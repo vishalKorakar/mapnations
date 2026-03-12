@@ -1,12 +1,18 @@
 import { e as createComponent, f as createAstro, k as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, u as unescapeHTML, h as addAttribute } from '../../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { a as fetchArticleBySlug, b as fetchArticles, S as STRAPI_URL, $ as $$Layout } from '../../chunks/Layout_-3ypR12o.mjs';
-import { $ as $$Header, a as $$Footer } from '../../chunks/footer_BYzcqzDa.mjs';
+import { a as fetchArticleBySlug, b as fetchArticles, S as STRAPI_URL, $ as $$Layout } from '../../chunks/Layout_HMBnYElJ.mjs';
+import { $ as $$Header, a as $$Footer } from '../../chunks/footer_Co4KUagC.mjs';
 import { r as renderBlocks } from '../../chunks/render_vnoDN9dY.mjs';
 /* empty css                                     */
 export { renderers } from '../../renderers.mjs';
 
 const $$Astro = createAstro();
+async function getStaticPaths() {
+  const articles = await fetchArticles();
+  return articles.filter((a) => a.slug != null && a.slug !== "").map((a) => ({
+    params: { slug: String(a.slug) }
+  }));
+}
 const $$slug = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$slug;
@@ -58,6 +64,7 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: $$slug,
   file: $$file,
+  getStaticPaths,
   url: $$url
 }, Symbol.toStringTag, { value: 'Module' }));
 

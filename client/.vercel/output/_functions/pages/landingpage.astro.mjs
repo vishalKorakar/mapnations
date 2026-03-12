@@ -1,6 +1,6 @@
 import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead, u as unescapeHTML } from '../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { g as fetchPages, $ as $$Layout } from '../chunks/Layout_-3ypR12o.mjs';
+import { h as fetchPages, $ as $$Layout } from '../chunks/Layout_HMBnYElJ.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$LandingPage = createComponent(async ($$result, $$props, $$slots) => {

@@ -1,7 +1,7 @@
 import { e as createComponent, m as maybeRenderHead, r as renderTemplate, h as addAttribute, k as renderComponent, u as unescapeHTML } from './astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { i as fetchChapters, f as fetchPageBySlug, $ as $$Layout } from './Layout_-3ypR12o.mjs';
-import { $ as $$Header, a as $$Footer } from './footer_BYzcqzDa.mjs';
+import { d as fetchChapters, f as fetchPageBySlug, $ as $$Layout } from './Layout_HMBnYElJ.mjs';
+import { $ as $$Header, a as $$Footer } from './footer_Co4KUagC.mjs';
 import 'clsx';
 import { a as renderInline, r as renderBlocks } from './render_vnoDN9dY.mjs';
 

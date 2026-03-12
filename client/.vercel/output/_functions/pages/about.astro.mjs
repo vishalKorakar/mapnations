@@ -1,7 +1,7 @@
 import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead, l as Fragment, u as unescapeHTML, h as addAttribute } from '../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { $ as $$Header, a as $$Footer } from '../chunks/footer_BYzcqzDa.mjs';
-import { f as fetchPageBySlug, $ as $$Layout } from '../chunks/Layout_-3ypR12o.mjs';
+import { $ as $$Header, a as $$Footer } from '../chunks/footer_Co4KUagC.mjs';
+import { f as fetchPageBySlug, $ as $$Layout } from '../chunks/Layout_HMBnYElJ.mjs';
 import { r as renderBlocks } from '../chunks/render_vnoDN9dY.mjs';
 export { renderers } from '../renderers.mjs';
 

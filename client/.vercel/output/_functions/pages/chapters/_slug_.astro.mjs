@@ -1,8 +1,8 @@
 import { e as createComponent, f as createAstro, m as maybeRenderHead, h as addAttribute, r as renderTemplate, k as renderComponent } from '../../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { c as fetchChapterBySlug, $ as $$Layout } from '../../chunks/Layout_-3ypR12o.mjs';
+import { c as fetchChapterBySlug, $ as $$Layout, d as fetchChapters } from '../../chunks/Layout_HMBnYElJ.mjs';
 import 'clsx';
-import { $ as $$Header, a as $$Footer } from '../../chunks/footer_BYzcqzDa.mjs';
+import { $ as $$Header, a as $$Footer } from '../../chunks/footer_Co4KUagC.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const $$Astro$1 = createAstro();
@@ -21,6 +21,12 @@ const $$MapCard = createComponent(($$result, $$props, $$slots) => {
 }, "/Users/vishalbalasubramanian/mapping-the-nations-mockup-test/client/src/components/MapCard.astro", void 0);
 
 const $$Astro = createAstro();
+async function getStaticPaths() {
+  const chapters = await fetchChapters();
+  return (chapters ?? []).filter((c) => c.slug != null && c.slug !== "").map((c) => ({
+    params: { slug: String(c.slug) }
+  }));
+}
 const $$slug = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$slug;
@@ -40,6 +46,7 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: $$slug,
   file: $$file,
+  getStaticPaths,
   url: $$url
 }, Symbol.toStringTag, { value: 'Module' }));
 

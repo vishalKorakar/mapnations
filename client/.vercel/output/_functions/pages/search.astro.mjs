@@ -1,7 +1,7 @@
 import { e as createComponent, r as renderTemplate, o as defineScriptVars, k as renderComponent, m as maybeRenderHead } from '../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { e as fetchMaps, S as STRAPI_URL, $ as $$Layout } from '../chunks/Layout_-3ypR12o.mjs';
-import { $ as $$Header, a as $$Footer } from '../chunks/footer_BYzcqzDa.mjs';
+import { g as fetchMaps, S as STRAPI_URL, $ as $$Layout } from '../chunks/Layout_HMBnYElJ.mjs';
+import { $ as $$Header, a as $$Footer } from '../chunks/footer_Co4KUagC.mjs';
 export { renderers } from '../renderers.mjs';
 
 var __freeze = Object.freeze;

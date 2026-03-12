@@ -13,6 +13,17 @@ const periods: Record<string, { start: number; end: number; label: string }> = {
   '1881-1932': { start: 1881, end: 1932, label: '1881–1932' },
 };
 
+// Required for static site generation - tells Astro which pages to build
+export function getStaticPaths() {
+  return [
+    { params: { period: '1811-1840' } },
+    { params: { period: '1841-1860' } },
+    { params: { period: '1861-1870' } },
+    { params: { period: '1871-1880' } },
+    { params: { period: '1881-1932' } },
+  ];
+}
+
 const { period } = Astro.params;
 const periodConfig = periods[period ?? ''];
 

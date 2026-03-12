@@ -5,6 +5,15 @@ import Footer from '../../components/footer.astro';
 import { fetchArticles, fetchArticleBySlug, STRAPI_URL } from '../../lib/strapi';
 import { renderBlocks } from '../../lib/render';
 
+export async function getStaticPaths() {
+  const articles = await fetchArticles();
+  return articles
+    .filter((a: any) => a.slug != null && a.slug !== '')
+    .map((a: any) => ({
+      params: { slug: String(a.slug) },
+    }));
+}
+
 const { slug } = Astro.params;
 const article = await fetchArticleBySlug(slug);
 

@@ -1,11 +1,22 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import MapCard from "../../components/MapCard.astro";
-import { fetchChapterBySlug } from "../../lib/strapi";
+import { fetchChapters, fetchChapterBySlug } from "../../lib/strapi";
 import Footer from '../../components/footer.astro';
 import Header from '../../components/header.astro';
 
-// get slug from URL
+// ✅ REQUIRED for dynamic routes in Astro SSG
+export async function getStaticPaths() {
+  const chapters = await fetchChapters();
+
+  return (chapters ?? [])
+    .filter((c: any) => c.slug != null && c.slug !== '')
+    .map((c: any) => ({
+      params: { slug: String(c.slug) },
+    }));
+}
+
+// ✅ get slug from URL
 const { slug } = Astro.params;
 
 // ✅ fetch current chapter

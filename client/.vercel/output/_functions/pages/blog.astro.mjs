@@ -1,7 +1,7 @@
 import { e as createComponent, k as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { b as fetchArticles, $ as $$Layout, S as STRAPI_URL } from '../chunks/Layout_-3ypR12o.mjs';
-import { $ as $$Header, a as $$Footer } from '../chunks/footer_BYzcqzDa.mjs';
+import { b as fetchArticles, $ as $$Layout, S as STRAPI_URL } from '../chunks/Layout_HMBnYElJ.mjs';
+import { $ as $$Header, a as $$Footer } from '../chunks/footer_Co4KUagC.mjs';
 /* empty css                                */
 export { renderers } from '../renderers.mjs';
 

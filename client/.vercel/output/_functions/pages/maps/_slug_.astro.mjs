@@ -1,11 +1,17 @@
 import { e as createComponent, f as createAstro, k as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute, l as Fragment, u as unescapeHTML } from '../../chunks/astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
-import { h as fetchMapBySlug, e as fetchMaps, $ as $$Layout } from '../../chunks/Layout_-3ypR12o.mjs';
-import { $ as $$Header, a as $$Footer } from '../../chunks/footer_BYzcqzDa.mjs';
+import { i as fetchMapBySlug, g as fetchMaps, $ as $$Layout } from '../../chunks/Layout_HMBnYElJ.mjs';
+import { $ as $$Header, a as $$Footer } from '../../chunks/footer_Co4KUagC.mjs';
 /* empty css                                     */
 export { renderers } from '../../renderers.mjs';
 
 const $$Astro = createAstro();
+async function getStaticPaths() {
+  const maps = await fetchMaps();
+  return maps.filter((map) => map.slug != null && map.slug !== "").map((map) => ({
+    params: { slug: String(map.slug) }
+  }));
+}
 const $$slug = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$slug;
@@ -20,7 +26,7 @@ const $$slug = createComponent(async ($$result, $$props, $$slots) => {
     return img.url ? `${img.url}` : null;
   };
   const fullImageUrl = getImageUrl();
-  const allMaps = await fetchMaps();
+  const allMaps = (await fetchMaps()).filter((m) => m.slug != null && m.slug !== "" && m.slug !== "null" && m.slug !== "undefined");
   const currentIndex = allMaps.findIndex((m) => m.slug === slug);
   const prevMap = currentIndex > 0 ? allMaps[currentIndex - 1] : null;
   const nextMap = currentIndex < allMaps.length - 1 ? allMaps[currentIndex + 1] : null;
@@ -62,6 +68,7 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: $$slug,
   file: $$file,
+  getStaticPaths,
   url: $$url
 }, Symbol.toStringTag, { value: 'Module' }));
 

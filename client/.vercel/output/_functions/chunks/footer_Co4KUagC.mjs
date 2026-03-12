@@ -1,7 +1,7 @@
 import { e as createComponent, m as maybeRenderHead, n as renderScript, r as renderTemplate, f as createAstro, h as addAttribute, k as renderComponent } from './astro/server_cJ1N_z4V.mjs';
 import 'piccolore';
 import 'clsx';
-import { i as fetchChapters, j as fetchGlobal } from './Layout_-3ypR12o.mjs';
+import { d as fetchChapters, j as fetchGlobal } from './Layout_HMBnYElJ.mjs';
 
 const $$Menu = createComponent(async ($$result, $$props, $$slots) => {
   await fetchChapters();
