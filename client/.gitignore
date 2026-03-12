@@ -1,0 +1,9 @@
+# Astro build output
+dist/
+.astro/
+
+# Vercel build output (generated at deploy time, do not commit)
+.vercel/
+
+# Dependencies
+node_modules/
