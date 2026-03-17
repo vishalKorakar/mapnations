@@ -17,7 +17,7 @@ async function strapiFetch(path) {
 }
 
 export async function fetchGlobal() {
-  const json = await strapiFetch(`/api/global`);
+  const json = await strapiFetch(`/api/global?populate=*`);
   return json.data ?? null;
 }
 

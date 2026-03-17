@@ -7,6 +7,7 @@ import Footer from "../components/footer.astro";
 const { title = "Mapping the Nation" } = Astro.props;
 
 const global = await fetchGlobal();
+const faviconUrl = global?.logo?.url ?? "/favicon.svg";
 ---
 
 <!doctype html>
@@ -17,6 +18,7 @@ const global = await fetchGlobal();
 		<meta name="title" content="Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten" />
 		<meta name="description" content="Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten" />
 		<title>Mapping the Nation - A Companion Site to Mapping the Nation by Susan Schulten</title>
+		<link rel="icon" href="/favicon.png" />
 	</head>
 	<body>
 		<slot />
