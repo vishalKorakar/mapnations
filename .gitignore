@@ -1,3 +1,7 @@
+# Large encrypted export files
+server/*.enc
+server/*.tar.gz.enc
+
 ############################
 # OS X
 ############################
