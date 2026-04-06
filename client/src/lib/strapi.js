@@ -1,6 +1,18 @@
 export const STRAPI_URL = import.meta.env.STRAPI_URL || "https://useful-bird-4f65a1d6ee.strapiapp.com";
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || "";
 
+export function toAbsoluteUrl(url) {
+  if (!url) return null;
+  return url.startsWith('http') ? url : `${STRAPI_URL}${url}`;
+}
+
+export function getMapImageUrl(map) {
+  const img = map?.image;
+  if (!img) return null;
+  const file = img.formats?.thumbnail ?? img;
+  return toAbsoluteUrl(file?.url);
+}
+
 async function strapiFetch(path) {
   const res = await fetch(`${STRAPI_URL}${path}`, {
     headers: STRAPI_TOKEN
@@ -34,7 +46,7 @@ export async function fetchPageBySlug(slug) {
 }
 
 export async function fetchChapters() {
-  const json = await strapiFetch(`/api/chapters?sort[0]=order:asc`);
+  const json = await strapiFetch(`/api/chapters?sort[0]=order:asc&populate=*`);
   return json.data ?? [];
 }
 

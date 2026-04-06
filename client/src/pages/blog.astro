@@ -4,8 +4,13 @@ import Header from '../components/header.astro';
 import Footer from '../components/footer.astro';
 import { fetchArticles, STRAPI_URL } from '../lib/strapi';
 
-// Fetch all articles
-const articles = await fetchArticles();
+// Fetch all articles and sort by articleDate descending (newest first)
+const rawArticles = await fetchArticles();
+const articles = rawArticles.slice().sort((a: any, b: any) => {
+  const dateA = a.articleDate ? new Date(a.articleDate).getTime() : 0;
+  const dateB = b.articleDate ? new Date(b.articleDate).getTime() : 0;
+  return dateB - dateA;
+});
 
 // Extract unique categories and their article counts
 const categoryCounts = new Map<string, number>();
@@ -83,13 +88,15 @@ const getExcerpt = (article: any) => {
             </div>
 
             <h3>Archives</h3>
-            <ul>
-              {archiveList.map((archive) => (
-                <li>
-                  <a href={`/blog?archive=${archive.key}`}>{archive.label}</a>
-                </li>
-              ))}
-            </ul>
+            <div class="category-dropdown-wrap">
+              <select id="archive-select" class="category-select">
+                <option value="">All Months</option>
+                {archiveList.map((archive) => (
+                  <option value={archive.key}>{archive.label}</option>
+                ))}
+              </select>
+              <span class="dropdown-arrow">&#9662;</span>
+            </div>
 
             <h3>Links</h3>
             <ul>
@@ -171,7 +178,14 @@ const getExcerpt = (article: any) => {
           <p>No blog posts found.</p>
         )}
 
-        <p id="no-results">No posts found in this category.</p>
+        <p id="no-results" style="display:none;">No posts found in this category.</p>
+
+        <div id="pagination" class="pagination">
+          <button id="prev-page" class="page-btn" disabled>« Newer Posts</button>
+          <span id="page-info" class="page-info"></span>
+          <button id="next-page" class="page-btn">Older Posts »</button>
+        </div>
+
       </section>
 
     </div>
@@ -259,57 +273,159 @@ const getExcerpt = (article: any) => {
     font-style: italic;
     padding: 10px 0 30px 0;
   }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    clear: both;
+    border-top: 1px solid #c9c2a8;
+    padding-top: 18px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+  }
+
+  .page-btn {
+    background: none;
+    border: none;
+    color: #004146;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .page-btn:hover:not(:disabled) {
+    color: #962f11;
+    text-decoration: underline;
+  }
+
+  .page-btn:disabled {
+    color: #c9c2a8;
+    cursor: default;
+  }
+
+  .page-info {
+    color: #6b6242;
+    font-size: 13px;
+  }
 </style>
 
 <script>
   (function () {
+    const POSTS_PER_PAGE = 10;
+
     const select = document.getElementById('category-select') as HTMLSelectElement | null;
+    const archiveSelect = document.getElementById('archive-select') as HTMLSelectElement | null;
     const notice = document.getElementById('filter-notice') as HTMLElement | null;
     const filterLabel = document.getElementById('filter-label') as HTMLElement | null;
     const noResults = document.getElementById('no-results') as HTMLElement | null;
-    const articles = document.querySelectorAll<HTMLElement>('#content article');
+    const prevBtn = document.getElementById('prev-page') as HTMLButtonElement | null;
+    const nextBtn = document.getElementById('next-page') as HTMLButtonElement | null;
+    const pageInfo = document.getElementById('page-info') as HTMLElement | null;
+    const allArticles = Array.from(document.querySelectorAll<HTMLElement>('#content article'));
 
-    function applyFilter(category: string) {
-      let visibleCount = 0;
+    let currentPage = 1;
+    let filtered: HTMLElement[] = [];
 
-      articles.forEach((article) => {
-        const cats = (article.dataset.categories || '').split('|||').filter(Boolean);
-        const show = !category || cats.includes(category);
-        article.style.display = show ? '' : 'none';
-        if (show) visibleCount++;
+    function getFiltered(category: string, archive: string): HTMLElement[] {
+      return allArticles.filter((a) => {
+        const cats = (a.dataset.categories || '').split('|||').filter(Boolean);
+        const arc = a.dataset.archive || '';
+        return (!category || cats.includes(category)) && (!archive || arc === archive);
       });
-
-      if (notice) notice.style.display = category ? 'block' : 'none';
-      if (filterLabel) filterLabel.textContent = category;
-      if (noResults) noResults.style.display = visibleCount === 0 && category ? 'block' : 'none';
     }
 
-    // On load: read URL param and sync dropdown
-    const initial = new URLSearchParams(window.location.search).get('category') || '';
-    if (select && initial) select.value = initial;
-    applyFilter(initial);
+    function render() {
+      allArticles.forEach((a) => (a.style.display = 'none'));
+      const total = Math.ceil(filtered.length / POSTS_PER_PAGE);
+      filtered.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE)
+        .forEach((a) => (a.style.display = ''));
+      if (prevBtn) prevBtn.disabled = currentPage <= 1;
+      if (nextBtn) nextBtn.disabled = currentPage >= total;
+      if (pageInfo) pageInfo.textContent = total > 1 ? `Page ${currentPage} of ${total}` : '';
+      if (noResults) noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+    }
 
-    // On dropdown change: update URL and filter
+    function apply(category: string, archive: string, page = 1) {
+      currentPage = page;
+      filtered = getFiltered(category, archive);
+      if (notice) notice.style.display = (category || archive) ? 'block' : 'none';
+      if (filterLabel) filterLabel.textContent = category || archive;
+      render();
+    }
+
+    // On load
+    const params = new URLSearchParams(window.location.search);
+    const initCat = params.get('category') || '';
+    const initArc = params.get('archive') || '';
+    const initPage = parseInt(params.get('page') || '1', 10);
+    if (select && initCat) select.value = initCat;
+    if (archiveSelect && initArc) archiveSelect.value = initArc;
+    apply(initCat, initArc, initPage);
+
+    // Category dropdown
     select?.addEventListener('change', () => {
       const val = select.value;
+      if (archiveSelect) archiveSelect.value = '';
       const url = new URL(window.location.href);
-      if (val) {
-        url.searchParams.set('category', val);
-      } else {
-        url.searchParams.delete('category');
-      }
+      val ? url.searchParams.set('category', val) : url.searchParams.delete('category');
+      url.searchParams.delete('archive');
+      url.searchParams.delete('page');
       window.history.pushState({}, '', url.toString());
-      applyFilter(val);
+      apply(val, '');
     });
 
-    // Clear filter link
+    // Archive dropdown
+    archiveSelect?.addEventListener('change', () => {
+      const val = archiveSelect.value;
+      if (select) select.value = '';
+      const url = new URL(window.location.href);
+      val ? url.searchParams.set('archive', val) : url.searchParams.delete('archive');
+      url.searchParams.delete('category');
+      url.searchParams.delete('page');
+      window.history.pushState({}, '', url.toString());
+      apply('', val);
+    });
+
+    // Clear filter
     document.getElementById('clear-filter')?.addEventListener('click', (e) => {
       e.preventDefault();
       if (select) select.value = '';
+      if (archiveSelect) archiveSelect.value = '';
       const url = new URL(window.location.href);
       url.searchParams.delete('category');
+      url.searchParams.delete('archive');
+      url.searchParams.delete('page');
       window.history.pushState({}, '', url.toString());
-      applyFilter('');
+      apply('', '');
+    });
+
+    // Newer Posts (previous page)
+    prevBtn?.addEventListener('click', () => {
+      if (currentPage <= 1) return;
+      currentPage--;
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', String(currentPage));
+      window.history.pushState({}, '', url.toString());
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Older Posts (next page)
+    nextBtn?.addEventListener('click', () => {
+      if (currentPage >= Math.ceil(filtered.length / POSTS_PER_PAGE)) return;
+      currentPage++;
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', String(currentPage));
+      window.history.pushState({}, '', url.toString());
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   })();
 </script>

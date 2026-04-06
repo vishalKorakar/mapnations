@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/header.astro';
 import Footer from '../../components/footer.astro';
-import { fetchArticles, fetchArticleBySlug, STRAPI_URL } from '../../lib/strapi';
+import { fetchArticles, fetchArticleBySlug, STRAPI_URL, toAbsoluteUrl } from '../../lib/strapi';
 import { renderBlocks } from '../../lib/render';
 
 export async function getStaticPaths() {
@@ -39,7 +39,7 @@ const formattedDate = article.articleDate
 // Get featured image URL
 const getFeaturedImageUrl = () => {
   const img = article.image || article.featuredImage;
-  if (img?.url) return `${img.url}`; //
+  if (img?.url) return toAbsoluteUrl(img.url);
   return null;
 };
 const featuredImageUrl = getFeaturedImageUrl();
@@ -171,11 +171,19 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
 
         <!-- Comments section -->
         <div id="comments" class="comments-section">
+
+          <!-- Existing comments list -->
+          <div id="comments-list">
+            <p id="comments-loading" style="font-family: Arial, Helvetica, sans-serif; font-size:14px; color:#6b6242;">Loading comments…</p>
+          </div>
+
           <h2>Leave a Reply</h2>
           <div id="comment-success" style="display:none; color:#004146; margin-bottom:16px; font-family: Arial, Helvetica, sans-serif; font-size:14px;">
             Thank you for your comment! It will appear after review.
           </div>
           <div id="comment-error" style="display:none; color:#962f11; margin-bottom:16px; font-family: Arial, Helvetica, sans-serif; font-size:14px;"></div>
+          <input type="hidden" id="article-doc-id" value={article.documentId} />
+          <input type="hidden" id="strapi-url" value={STRAPI_URL} />
           <form class="comment-form" id="comment-form">
             <div class="form-row">
               <input type="text" name="name" id="comment-name" required />
@@ -205,6 +213,9 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
 </Layout>
 
 <script>
+  // Read server values from hidden inputs (avoids define:vars which disables TypeScript processing)
+  const STRAPI_URL = (document.getElementById('strapi-url') as HTMLInputElement)?.value || '';
+
   // Category dropdown — navigate to /blog?category=...
   const select = document.getElementById('category-select') as HTMLSelectElement | null;
   select?.addEventListener('change', () => {
@@ -215,6 +226,68 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
       window.location.href = '/blog';
     }
   });
+
+  // ── Load & display existing comments ──────────────────────────────────────
+  function formatCommentDate(dateStr: string): string {
+    try {
+      return new Date(dateStr).toLocaleDateString('en-US', {
+        month: 'long', day: 'numeric', year: 'numeric'
+      });
+    } catch { return ''; }
+  }
+
+  function renderCommentBlocks(blocks: any[]): string {
+    if (!blocks || !blocks.length) return '';
+    return blocks.map((b: any) => {
+      if (b.type === 'paragraph') {
+        const text = (b.children || []).map((c: any) => c.text || '').join('');
+        return `<p>${text}</p>`;
+      }
+      return '';
+    }).join('');
+  }
+
+  async function loadComments() {
+    const articleDocId = (document.getElementById('article-doc-id') as HTMLInputElement)?.value;
+    const listEl = document.getElementById('comments-list') as HTMLElement | null;
+    const loadingEl = document.getElementById('comments-loading') as HTMLElement | null;
+    if (!listEl || !articleDocId) {
+      if (loadingEl) loadingEl.style.display = 'none';
+      return;
+    }
+
+    try {
+      const url = `${STRAPI_URL}/api/comments?filters[article][documentId][$eq]=${articleDocId}&sort=createdAt:asc`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Could not load comments.');
+      const json = await res.json();
+      const comments = json?.data || [];
+
+      if (loadingEl) loadingEl.remove();
+
+      if (comments.length === 0) {
+        listEl.innerHTML = '<p class="no-comments">No comments yet. Be the first to leave one!</p>';
+        return;
+      }
+
+      const countHeading = `<h3 class="comments-count">${comments.length} Comment${comments.length !== 1 ? 's' : ''}</h3>`;
+      const items = comments.map((c: any) => `
+        <div class="comment-item">
+          <div class="comment-meta">
+            <strong class="comment-author">${c.Name || 'Anonymous'}</strong>
+            <span class="comment-date">${formatCommentDate(c.createdAt)}</span>
+          </div>
+          <div class="comment-body">${renderCommentBlocks(c.Comment || [])}</div>
+        </div>
+      `).join('');
+
+      listEl.innerHTML = countHeading + items;
+    } catch (err: any) {
+      if (loadingEl) loadingEl.remove();
+      // Silently hide if permissions not yet enabled
+      listEl.innerHTML = '';
+    }
+  }
 
   // Comment form submission
   const commentForm = document.getElementById('comment-form') as HTMLFormElement | null;
@@ -233,8 +306,9 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
     if (commentSubmit) commentSubmit.disabled = true;
     if (commentError) commentError.style.display = 'none';
 
+    const articleDocId = (document.getElementById('article-doc-id') as HTMLInputElement)?.value;
     try {
-      const res = await fetch('https://useful-bird-4f65a1d6ee.strapiapp.com/api/comments', {
+      const res = await fetch(`${STRAPI_URL}/api/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -242,6 +316,7 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
             Name: name,
             Email: email,
             Comment: [{ type: 'paragraph', children: [{ type: 'text', text }] }],
+            article: { connect: [{ documentId: articleDocId }] },
           },
         }),
       });
@@ -263,6 +338,9 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
   });
 
   document.addEventListener('DOMContentLoaded', () => {
+    loadComments();
+
+    (function initViewer() {
     const container = document.getElementById('pan-container') as HTMLElement | null;
     const img = document.getElementById('viewer-img') as HTMLImageElement | null;
     if (!container || !img) return;
@@ -329,6 +407,7 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
       isDragging = false;
       container.style.cursor = 'grab';
     });
+    })();
   });
 </script>
 
@@ -560,6 +639,59 @@ const allCategories = Array.from(categoryCounts.keys()).sort();
     font-size: 1.5em;
     font-weight: normal;
     margin-bottom: 28px;
+  }
+
+  /* Existing comments list */
+  .comments-count {
+    font-family: 'CallunaBoldItalic', 'Times New Roman', Times, serif;
+    color: #004146;
+    font-size: 1.2em;
+    font-weight: normal;
+    margin-bottom: 20px;
+  }
+  .comment-item {
+    border-bottom: 1px solid #e8e3d4;
+    padding: 18px 0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .comment-item:first-of-type {
+    border-top: 1px solid #e8e3d4;
+  }
+  .comment-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .comment-author {
+    font-size: 14px;
+    color: #004146;
+    font-weight: bold;
+  }
+  .comment-date {
+    font-size: 12px;
+    color: #6b6242;
+  }
+  .comment-body {
+    font-size: 14px;
+    color: #3d3725;
+    line-height: 1.6;
+  }
+  .comment-body p {
+    margin: 0 0 8px 0;
+  }
+  .comment-body p:last-child {
+    margin-bottom: 0;
+  }
+  .no-comments {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #6b6242;
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+  #comments-list {
+    margin-bottom: 36px;
   }
 
   /* Comment form */

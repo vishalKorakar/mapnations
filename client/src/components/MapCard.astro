@@ -1,17 +1,14 @@
 ---
-import { STRAPI_URL }  from '../lib/strapi.js';
+import { getMapImageUrl } from '../lib/strapi.js';
 const { map } = Astro.props;
 
-
-// These depend on how you store fields in Strapi:
 const title = map?.mapTitle ?? "Untitled map";
 const desc = map?.Description ?? "";
 const year = map?.mapYear ?? "";
-const author = map?.creatorName ?? ""; // example: "Ramsay, David"
+const author = map?.creatorName ?? "";
 const slug = map?.slug ?? "";
 
-// If you store image under featuredImage
-const img = map?.image?.formats?.thumbnail?.url || null;
+const img = getMapImageUrl(map);
 
 // If you store external viewer URL directly (recommended)
 const viewerUrl = map?.viewerUrl || (slug ? `/maps/${slug}` : "#");

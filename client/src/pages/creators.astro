@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/header.astro';
 import Footer from '../components/footer.astro';
-import { fetchMaps, STRAPI_URL } from '../lib/strapi';
+import { fetchMaps, getMapImageUrl } from '../lib/strapi';
 
 // Fetch all maps
 const allMaps = await fetchMaps();
@@ -22,14 +22,6 @@ allMaps.forEach((map: any) => {
 const creators = Array.from(creatorMap.entries())
   .sort((a, b) => a[0].localeCompare(b[0]))
   .map(([name, maps]) => ({ name, maps }));
-
-// Helper to get image URL
-const getImageUrl = (map: any) => {
-  const img = map.image;
-  if (!img) return null;
-  const file = img.formats?.thumbnail ?? img;
-  return file?.url ? `${file.url}` : null;
-};
 ---
 
 <Layout>
@@ -48,7 +40,7 @@ const getImageUrl = (map: any) => {
             </h2>
             
             {creator.maps.map((map: any) => {
-              const imgUrl = getImageUrl(map);
+              const imgUrl = getMapImageUrl(map);
               const viewerUrl = map.slug ? `/maps/${map.slug}` : '#';
               
               return (

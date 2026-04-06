@@ -1,24 +1,19 @@
 ---
-import { fetchChapters } from "../lib/strapi";
-import { STRAPI_URL } from "../lib/strapi.js";
+import { fetchChapters, toAbsoluteUrl } from "../lib/strapi.js";
 
 const chapters = await fetchChapters();
 
-// ✅ Build a clean array with everything ready for rendering
 const chapterItems = (chapters ?? []).map((c: any) => {
   const title = c?.title ?? "";
   const slug = c?.slug ?? "";
   const Description = c?.Description ?? "";
-
-  const thumb =
-    c?.chapterImage?.formats?.thumbnail?.url ||
-    "";
+  const rawThumb = c?.chapterImage?.formats?.thumbnail?.url || c?.chapterImage?.url || null;
 
   return {
     title,
     slug,
     Description,
-    imageUrl: thumb ? `${thumb}` : "",
+    imageUrl: toAbsoluteUrl(rawThumb),
   };
 });
 ---
@@ -29,7 +24,7 @@ const chapterItems = (chapters ?? []).map((c: any) => {
   {chapterItems.map((c: any) => (
     <article class="chapter">
       <a href={`/chapters/${c.slug}`}>
-        {c.imageUrl && <img src={`${c.imageUrl}`} alt={`${c.title} image`} />} <!-- ${STRAPI_URL}-->
+        {c.imageUrl && <img src={c.imageUrl} alt={`${c.title} image`} />}
       </a>
 
       <h3>

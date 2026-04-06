@@ -1,7 +1,7 @@
 ---
 import Header from '../components/header.astro';
 import Footer from '../components/footer.astro';
-import { fetchPageBySlug } from '../lib/strapi';
+import { fetchPageBySlug, STRAPI_URL, toAbsoluteUrl } from '../lib/strapi';
 import Layout from '../layouts/Layout.astro';
 import { renderBlocks } from '../lib/render';
 import { record } from 'astro:schema';
@@ -45,22 +45,25 @@ const reviews = (attr.Sections ?? []).filter(
 
             <br class="clearfloat"><br class="clearfloat">
 
-            {book.map((b: any) => (
+            {book.map((b: any) => {
+              const desc: any[] = b?.Description || [];
+              const imageBlock = desc.find((d: any) => d.type === 'image');
+              const imageUrl = toAbsoluteUrl(imageBlock?.image?.url ?? imageBlock?.url ?? null);
+              const awardText = desc.find((d: any) => d.type === 'paragraph' && (d.children || []).some((c: any) => c.text?.trim()));
+              const awardHtml = awardText ? (awardText.children || []).map((c: any) => c.text || '').join('') : '';
+              const bodyBlocks = desc.filter((d: any) => d !== awardText && d.type !== 'image' && (d.children || []).some((c: any) => c.text?.trim()));
+              return (
                 <>
-                <h2><span>{b?.title}</span></h2>
-                <center><h5><em>{b?.Description[0]?.children[0]?.text}</em></h5></center>
-                <div id="book-promo">
-                    <img src={b?.Description[3]?.image?.url} alt={b?.Description[3]?.image?.alternativeText || 'Book cover'} />
-                    <p><a href={b?.Description[4]?.children[1]?.url} target="_blank">&nbsp;<br /><strong>Buy Now</strong></a></p>
-
-                </div>
-                
-                <p>{b?.Description[1]?.children[0]?.text}</p>
-                <p>{b?.Description[2]?.children[0]?.text}</p>
+                  <h2><span>{b?.title}</span></h2>
+                  {awardHtml && <center><h5><em>{awardHtml}</em></h5></center>}
+                  <div id="book-promo">
+                    {imageUrl && <img src={imageUrl} alt="Book cover" />}
+                    <p><a href="https://cdcshoppingcart.uchicago.edu/Cart/PreferredBookbuyer.aspx?PRO=MAPNAT20" target="_blank">&nbsp;<br /><strong>Buy Now</strong></a></p>
+                  </div>
+                  <div set:html={renderBlocks(bodyBlocks)} />
                 </>
-                
-            ))
-            }
+              );
+            })}
             
             <br class="clearfloat"><br class="clearfloat">
 
@@ -68,7 +71,7 @@ const reviews = (attr.Sections ?? []).filter(
             {author.map((a: any) => (
                 <>
                     {a.title && <h2><span>{a?.title}</span></h2>}
-                    <img class="alignleft" src="http://www.mappingthenation.com/img/general/susan-schulten-portrait.jpg" alt="Susan Schulten Portrait"></img>
+                    <img class="alignleft" src={`${STRAPI_URL}/uploads/susan_schulten_portrait_2a46308764.jpg`} alt="Susan Schulten Portrait" />
                     <div set:html={renderBlocks(a?.Description)}></div></>
                 
             ))

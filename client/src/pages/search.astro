@@ -63,7 +63,8 @@ const allMaps = await fetchMaps();
       resultsEl.innerHTML = results.map((map) => {
         const img = map.image;
         const file = img?.formats?.thumbnail || img;
-        const imgUrl = file?.url ? `${file.url}` : null;
+        const rawUrl = file?.url ?? null;
+        const imgUrl = rawUrl ? (rawUrl.startsWith('http') ? rawUrl : `${STRAPI_URL}${rawUrl}`) : null;
         
         return `
           <article>
