@@ -22,6 +22,12 @@
     },
     "Comment": {
       "type": "blocks"
+    },
+    "article": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::article.article",
+      "inversedBy": "comments"
     }
   }
 }

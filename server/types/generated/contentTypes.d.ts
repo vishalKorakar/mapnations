@@ -480,6 +480,7 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   attributes: {
     articleDate: Schema.Attribute.String;
     categories: Schema.Attribute.Component<'layout.categories', true>;
+    comments: Schema.Attribute.Relation<'oneToMany', 'api::comment.comment'>;
     Contents: Schema.Attribute.Blocks;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -545,6 +546,7 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    article: Schema.Attribute.Relation<'manyToOne', 'api::article.article'>;
     Comment: Schema.Attribute.Blocks;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -638,7 +640,7 @@ export interface ApiMapMap extends Struct.CollectionTypeSchema {
   };
   attributes: {
     AdministrativeNotes: Schema.Attribute.String;
-    AlternateTitle: Schema.Attribute.String;
+    AlternateTitle: Schema.Attribute.Text;
     chapter: Schema.Attribute.Relation<'manyToOne', 'api::chapter.chapter'>;
     Coordinates: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
@@ -659,13 +661,13 @@ export interface ApiMapMap extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     mapTitle: Schema.Attribute.String;
     mapYear: Schema.Attribute.String;
-    Notes: Schema.Attribute.String;
+    Notes: Schema.Attribute.Text;
     order: Schema.Attribute.String;
     PhysicalNote: Schema.Attribute.String;
     Places: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     Publisher: Schema.Attribute.String;
-    RightsStatement: Schema.Attribute.String;
+    RightsStatement: Schema.Attribute.Text;
     Scale: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'mapTitle'>;
     SubjectGenre: Schema.Attribute.String;

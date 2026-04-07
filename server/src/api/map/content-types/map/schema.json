@@ -25,7 +25,7 @@
       "type": "string"
     },
     "AlternateTitle": {
-      "type": "string"
+      "type": "text"
     },
     "creatorName": {
       "type": "string"
@@ -55,7 +55,7 @@
       "type": "string"
     },
     "RightsStatement": {
-      "type": "string"
+      "type": "text"
     },
     "Publisher": {
       "type": "string"
@@ -76,7 +76,7 @@
       "type": "string"
     },
     "Notes": {
-      "type": "string"
+      "type": "text"
     },
     "AdministrativeNotes": {
       "type": "string"
