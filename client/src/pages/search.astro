@@ -2,10 +2,79 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/header.astro';
 import Footer from '../components/footer.astro';
-import { fetchMaps, STRAPI_URL } from '../lib/strapi';
+import { fetchMaps, fetchArticles, STRAPI_URL } from '../lib/strapi';
 
-// Fetch all maps at build time
-const allMaps = await fetchMaps();
+// Fetch all maps and articles at build time
+const rawMaps = await fetchMaps();
+const rawArticles = await fetchArticles();
+
+// Pre-process maps into a lean search-friendly structure
+const toAbsoluteUrl = (url: string) => url.startsWith('http') ? url : `${STRAPI_URL}${url}`;
+
+const searchMaps = rawMaps.map((map: any) => {
+  const img = map.image;
+  const file = img?.formats?.thumbnail ?? img;
+  const rawUrl = file?.url ?? null;
+  return {
+    mapTitle: map.mapTitle ?? '',
+    Description: map.Description ?? '',
+    creatorName: map.creatorName ?? '',
+    Topics: map.Topics ?? '',
+    Places: map.Places ?? '',
+    mapYear: map.mapYear ?? '',
+    AlternateTitle: map.AlternateTitle ?? '',
+    Notes: map.Notes ?? '',
+    slug: map.slug ?? '',
+    imageUrl: rawUrl ? toAbsoluteUrl(rawUrl) : null,
+  };
+});
+
+// Pre-process articles into a lean search-friendly structure
+const searchArticles = rawArticles.map((article: any) => {
+  // Get image URL
+  const img = article.image || article.featuredImage;
+  let imageUrl: string | null = null;
+  if (img) {
+    const file = img.formats?.thumbnail ?? img;
+    imageUrl = file?.url ? toAbsoluteUrl(file.url) : null;
+  }
+  if (!imageUrl) {
+    const imageBlock = (article.Contents || []).find((b: any) => b.type === 'image');
+    if (imageBlock?.image?.url) imageUrl = toAbsoluteUrl(imageBlock.image.url);
+  }
+
+  // Extract plain text excerpt from Contents
+  const firstPara = (article.Contents || []).find((b: any) => b.type === 'paragraph');
+  const excerptFull = firstPara
+    ? (firstPara.children || []).map((c: any) => c.text || '').join('')
+    : '';
+  const excerpt = excerptFull.length > 200 ? excerptFull.substring(0, 200) + '...' : excerptFull;
+
+  // Plain text from all paragraphs for search
+  const bodyText = (article.Contents || [])
+    .filter((b: any) => b.type === 'paragraph' || b.type === 'heading')
+    .map((b: any) => (b.children || []).map((c: any) => c.text || '').join(''))
+    .join(' ');
+
+  const categoryTitles = (article.categories || [])
+    .map((c: any) => c.categoryTitle ?? '')
+    .filter(Boolean)
+    .join(' ');
+
+  const date = article.articleDate
+    ? new Date(article.articleDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    : '';
+
+  return {
+    title: article.title ?? '',
+    slug: article.slug ?? '',
+    excerpt,
+    bodyText,
+    categoryTitles,
+    date,
+    imageUrl,
+  };
+});
 ---
 
 <Layout>
@@ -14,72 +83,96 @@ const allMaps = await fetchMaps();
     <div id="content-container" class="clearfix">
       <section id="content" class="browse">
         <h1><span>Search Results</span></h1>
-        
+
         <p id="search-status">Loading...</p>
-        
-        <div id="results-container"></div>
+
+        <div id="maps-section" style="display:none">
+          <h2>Maps</h2>
+          <div id="maps-results"></div>
+        </div>
+
+        <div id="blogs-section" style="display:none">
+          <h2>Blog Posts</h2>
+          <div id="blogs-results"></div>
+        </div>
+
+        <div id="no-results" style="display:none">
+          <p>No results found matching your search. Try different keywords.</p>
+        </div>
       </section>
     </div>
   </div>
   <Footer />
 </Layout>
 
-<script define:vars={{ allMaps, STRAPI_URL }}>
-  // Get search query from URL
+<script define:vars={{ searchMaps, searchArticles }}>
   const params = new URLSearchParams(window.location.search);
   const query = params.get('searchText') || '';
-  
+
   const statusEl = document.getElementById('search-status');
-  const resultsEl = document.getElementById('results-container');
-  
+  const mapsSectionEl = document.getElementById('maps-section');
+  const blogsSectionEl = document.getElementById('blogs-section');
+  const mapsResultsEl = document.getElementById('maps-results');
+  const blogsResultsEl = document.getElementById('blogs-results');
+  const noResultsEl = document.getElementById('no-results');
+
   if (!query) {
-    statusEl.textContent = 'Enter a search term to find maps.';
+    statusEl.textContent = 'Enter a search term to find maps and blog posts.';
   } else {
-    // Search function
     const searchTerm = query.toLowerCase().trim();
-    
-    const results = allMaps.filter((map) => {
+
+    // Filter maps
+    const mapResults = searchMaps.filter((map) => {
       const fields = [
-        map.mapTitle,
-        map.Description,
-        map.creatorName,
-        map.Topics,
-        map.Places,
-        map.mapYear,
-        map.AlternateTitle,
-        map.Notes,
+        map.mapTitle, map.Description, map.creatorName,
+        map.Topics, map.Places, map.mapYear, map.AlternateTitle, map.Notes,
       ];
-      
-      return fields.some((field) => 
-        field && String(field).toLowerCase().includes(searchTerm)
-      );
+      return fields.some((f) => f && String(f).toLowerCase().includes(searchTerm));
     });
-    
-    // Update status
-    statusEl.innerHTML = `Found <strong>${results.length}</strong> result${results.length !== 1 ? 's' : ''} for "<strong>${query}</strong>"`;
-    
-    // Render results
-    if (results.length > 0) {
-      resultsEl.innerHTML = results.map((map) => {
-        const img = map.image;
-        const file = img?.formats?.thumbnail || img;
-        const rawUrl = file?.url ?? null;
-        const imgUrl = rawUrl ? (rawUrl.startsWith('http') ? rawUrl : `${STRAPI_URL}${rawUrl}`) : null;
-        
-        return `
-          <article>
-            ${imgUrl ? `<a href="/maps/${map.slug}"><img src="${imgUrl}" alt="${map.mapTitle}" loading="lazy" /></a>` : ''}
-            <h3><a href="/maps/${map.slug}">${map.mapTitle}</a></h3>
-            <p>${map.Description || ''}</p>
-            <p class="map-meta">
-              ${map.creatorName ? `<span>${map.creatorName}</span>` : ''}
-              ${map.mapYear ? `<span> • ${map.mapYear}</span>` : ''}
-            </p>
-          </article>
-        `;
-      }).join('');
-    } else {
-      resultsEl.innerHTML = '<p>No maps found matching your search. Try different keywords.</p>';
+
+    // Filter articles
+    const blogResults = searchArticles.filter((article) => {
+      const fields = [article.title, article.excerpt, article.bodyText, article.categoryTitles];
+      return fields.some((f) => f && String(f).toLowerCase().includes(searchTerm));
+    });
+
+    const total = mapResults.length + blogResults.length;
+    statusEl.innerHTML = `Found <strong>${total}</strong> result${total !== 1 ? 's' : ''} for "<strong>${query}</strong>"`;
+
+    // Render maps
+    if (mapResults.length > 0) {
+      mapsSectionEl.style.display = '';
+      mapsResultsEl.innerHTML = mapResults.map((map) => `
+        <article>
+          ${map.imageUrl ? `<a href="/maps/${map.slug}"><img src="${map.imageUrl}" alt="${map.mapTitle}" loading="lazy" /></a>` : ''}
+          <h3><a href="/maps/${map.slug}">${map.mapTitle}</a></h3>
+          <p>${map.Description}</p>
+          <p class="map-meta">
+            ${map.creatorName ? `<span>${map.creatorName}</span>` : ''}
+            ${map.mapYear ? `<span> • ${map.mapYear}</span>` : ''}
+          </p>
+        </article>
+      `).join('');
+    }
+
+    // Render blog posts
+    if (blogResults.length > 0) {
+      blogsSectionEl.style.display = '';
+      blogsResultsEl.innerHTML = blogResults.map((article) => `
+        <article>
+          ${article.imageUrl ? `<a href="/blog/${article.slug}"><img src="${article.imageUrl}" alt="${article.title}" loading="lazy" /></a>` : ''}
+          <h3><a href="/blog/${article.slug}">${article.title}</a></h3>
+          ${article.excerpt ? `<p>${article.excerpt}</p>` : ''}
+          <p class="map-meta">
+            ${article.date ? `<span>${article.date}</span>` : ''}
+            ${article.categoryTitles ? `<span> • ${article.categoryTitles}</span>` : ''}
+          </p>
+        </article>
+      `).join('');
+    }
+
+    if (total === 0) {
+      noResultsEl.style.display = '';
     }
   }
 </script>

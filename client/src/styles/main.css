@@ -627,7 +627,8 @@ img.alignleft {
 	padding: 0 0 0 40px;
 }
 
-#content.chapter-list h2 {
+#content.chapter-list h2,
+#content.browse h2 {
 	color: #962f11;
 	font-family: 'CallunaSemibold', 'Times New Roman', Times, serif;
 	font-size: 30px;

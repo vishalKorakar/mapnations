@@ -18,13 +18,22 @@ const chapterItems = (chapters ?? []).map((c: any) => {
 });
 ---
 
+<style>
+  .chapter-thumb {
+    width: 245px;
+    height: 185px;
+    object-fit: cover;
+    display: block;
+  }
+</style>
+
 <section id="content" class="chapter-list">
   <h2><span>Browse Images by Book Chapter</span></h2>
 
   {chapterItems.map((c: any) => (
     <article class="chapter">
       <a href={`/chapters/${c.slug}`}>
-        {c.imageUrl && <img src={c.imageUrl} alt={`${c.title} image`} />}
+        {c.imageUrl && <img src={c.imageUrl} alt={`${c.title} image`} class="chapter-thumb" />}
       </a>
 
       <h3>
