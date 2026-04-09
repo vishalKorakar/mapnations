@@ -106,10 +106,20 @@ const chapters = await fetchChapters();
   const secondary = document.getElementById('secondary');
 
   if (browseBtn && secondary) {
-    browseBtn.addEventListener('click', () => {
+    browseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isOpen = secondary.classList.toggle('browse-open');
       browseBtn.setAttribute('aria-expanded', String(isOpen));
       browseBtn.innerHTML = isOpen ? '&#10005; CLOSE' : '&#9776; BROWSE IMAGES';
+    });
+
+    // Close floating dropdown when clicking outside (iPad)
+    document.addEventListener('click', (e) => {
+      if (secondary.classList.contains('browse-open') && !secondary.contains(e.target as Node)) {
+        secondary.classList.remove('browse-open');
+        browseBtn.setAttribute('aria-expanded', 'false');
+        browseBtn.innerHTML = '&#9776; BROWSE IMAGES';
+      }
     });
   }
 

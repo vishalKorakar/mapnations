@@ -1385,6 +1385,189 @@ footer p#footer-credit a {
   }
 }
 
+/* iPad Styles — floating browse dropdown (769px–1100px) */
+@media screen and (min-width: 769px) and (max-width: 1100px) {
+
+  /* ── Restore desktop header & primary nav ── */
+  header {
+    height: 254px;
+    min-height: 254px;
+    padding: 0 20px 0 19px;
+    background-size: cover;
+  }
+
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+
+  #primary {
+    display: block !important;
+    float: none;
+    position: absolute;
+    top: 0;
+    right: 20px;
+  }
+
+  #hoa-site-link {
+    float: none;
+    position: absolute;
+    top: 108px;
+    right: 20px;
+    bottom: auto;
+  }
+
+  #primary ol {
+    height: 100px;
+    width: 480px;
+    display: block !important;
+    flex-direction: unset;
+  }
+
+  #primary ol li {
+    float: left;
+    height: 100px;
+    width: 120px;
+    border-bottom: none;
+  }
+
+  #primary ol li a {
+    color: #2f290e;
+    font-family: 'CallunaSemibold', "Times New Roman", Times, serif;
+    font-size: 14px;
+    float: left;
+    height: 70px;
+    padding: 30px 0 0 0;
+    text-decoration: none;
+    text-align: center;
+    width: 120px;
+  }
+
+  #primary ol li a:hover {
+    color: #AE493E;
+    text-decoration: underline;
+  }
+
+  #primary ol li.selected a,
+  #primary ol li.selected a:hover {
+    color: #fff;
+    background: url(/img/backgrounds/selected.png) no-repeat center top;
+    font-weight: normal;
+    text-decoration: none;
+    border-left: none;
+    padding-left: 0;
+  }
+
+  /* Show the toggle button, hide the static label */
+  .browse-toggle {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-family: 'CallunaRegular', "Times New Roman", Times, serif;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.09em;
+    text-shadow: 1px 1px #002529;
+    gap: 8px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+
+  .browse-toggle:hover {
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  #secondary > p {
+    display: none;
+  }
+
+  /* Hide the nav list by default; float it open */
+  #secondary > ol {
+    display: none !important;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 300;
+    min-width: 240px;
+    background: #003f46;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    border-top: 2px solid rgba(255, 255, 255, 0.08);
+    /* reset flex from tablet styles */
+    flex-wrap: unset;
+    flex-direction: column;
+  }
+
+  /* Open state — floating panel */
+  #secondary.browse-open > ol {
+    display: block !important;
+    background: #003f46;
+  }
+
+  /* Top-level items */
+  #secondary.browse-open > ol > li {
+    float: none;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: none;
+  }
+
+  #secondary.browse-open > ol > li > a {
+    display: block;
+    float: none;
+    width: 100%;
+    height: auto;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  #secondary.browse-open > ol > li > a:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Sub-menus always expanded inside floating panel */
+  #secondary.browse-open ol ol {
+    display: block !important;
+    visibility: visible;
+    position: static !important;
+    width: 100%;
+    background: #003840;
+    box-shadow: none;
+    top: auto;
+    left: auto;
+  }
+
+  #secondary.browse-open ol ol li {
+    float: none;
+    width: 100%;
+    height: auto;
+    background: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  #secondary.browse-open ol ol li a {
+    display: block !important;
+    background: none !important;
+    float: none;
+    padding: 9px 20px 9px 36px !important;
+    width: auto;
+    height: auto;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  #secondary.browse-open ol ol li a:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
 /* Mobile Styles (max-width: 768px) */
 @media screen and (max-width: 768px) {
   .mobile-menu-toggle {
