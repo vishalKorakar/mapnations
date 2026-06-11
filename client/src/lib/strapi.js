@@ -13,19 +13,35 @@ export function getMapImageUrl(map) {
   return toAbsoluteUrl(file?.url);
 }
 
-async function strapiFetch(path) {
-  const res = await fetch(`${STRAPI_URL}${path}`, {
-    headers: STRAPI_TOKEN
-      ? { Authorization: `Bearer ${STRAPI_TOKEN}` }
-      : {},
-  });
+const requestCache = new Map();
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Strapi error ${res.status}: ${text}`);
+async function strapiFetch(path) {
+  if (requestCache.has(path)) {
+    return requestCache.get(path);
   }
 
-  return res.json();
+  const promise = (async () => {
+    const res = await fetch(`${STRAPI_URL}${path}`, {
+      headers: STRAPI_TOKEN
+        ? { Authorization: `Bearer ${STRAPI_TOKEN}` }
+        : {},
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Strapi error ${res.status}: ${text}`);
+    }
+
+    return res.json();
+  })();
+
+  requestCache.set(path, promise);
+  try {
+    return await promise;
+  } catch (err) {
+    requestCache.delete(path);
+    throw err;
+  }
 }
 
 export async function fetchGlobal() {
